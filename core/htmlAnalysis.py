@@ -41,6 +41,7 @@ class CatchHtml:
         chromeOptions = webdriver.ChromeOptions()
         chromeOptions.add_argument("--headless")
         self.driver = webdriver.Chrome(executable_path=executable_path,options=chromeOptions)
+        self.driver.maximize_window()
         self.bs4_html = None
 
     def get(self,url:str):
@@ -65,34 +66,11 @@ class CatchHtml:
         :param element: 元素
         :return:
         '''
-        coordinates_mode = 1
-        if coordinates_mode == 1:
-            # JS代码
-            js_code = """var r = arguments[0].getBoundingClientRect();
-            return {top: (window.outerHeight - window.innerHeight) + Math.floor(r.top),
-            left: Math.floor(r.left), elem_width: r.width, elem_height: r.height}"""
-            res = driver.execute_script(js_code, element)
-            x = res['left'] + random.randint(int(res['elem_width']) // 3, int(res['elem_width'] * 2 // 3))
-            y = res['top'] + random.randint(int(res['elem_height']) // 3, int(res['elem_height'] * 2 // 3))
-        elif coordinates_mode == 2:
-            win_pos = driver.get_window_position()
-            el_size = element.size
-            el_xy = element.location
-            x = el_xy['x'] + random.randint(int(el_size['width'] // 3), int(el_size['width'] * 2 // 3)) + win_pos[
-                'x'] + 8
-            y = el_xy['y'] + random.randint(int(el_size['height'] // 3), int(el_size['height'] * 2 // 3)) + win_pos[
-                'y'] + driver.execute_script('return window.outerHeight - window.innerHeight;') + 8
-        elif coordinates_mode == 3:
-            win_pos = driver.get_window_position()
-            el_size = element.size
-            x = element.location['x'] + random.randint(int(el_size['width'] // 3), int(el_size['width'] * 2 // 3)) + \
-                win_pos['x'] + 8
-            y = driver.execute_script('return arguments[0].getBoundingClientRect().top', element) + \
-                random.randint(int(el_size['height'] // 3), int(el_size['height'] * 2 // 3)) + win_pos[
-                    'y'] + driver.execute_script('return window.outerHeight - window.innerHeight;') + 8
-        else:
-            raise Exception("__get_coordinates__ : without this coordinates mode")
-        return x, y
+        # JS代码
+        js_code = """var r = arguments[0].getBoundingClientRect();return {"x":r.x,"y":r.y}"""
+        res = driver.execute_script(js_code, element)
+        print(res)
+        return int(res["x"]), int(res["y"])
 
     # 分析属性
     def attribute_analyst(self,label_str:str):
