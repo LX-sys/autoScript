@@ -30,9 +30,9 @@ class CatchHtml:
             "bs4_obj":bs4 Tag 对象,          # 共有属性
             "pos": 元素位置,                  # 共有属性
             "attr": 元素属性,                 # 共有属性
-            "size": 大小大小,                    # 共有属性
-            "value": 值列表,                 # find_select 独有属性
-            "text": 文字列表                  # find_select 独有属性
+            "size": 大小大小,                 # 共有属性
+            "text": 文字,                    # 共有属性
+            "value": 值,                    # 共有属性
         }
 
 
@@ -111,6 +111,7 @@ class CatchHtml:
         show_e_i = [se_s.index(e) for e in se_s if e.is_displayed()]
         se_s = list(filter(lambda e: e.is_displayed(), se_s))
         bs4_s = [bs4_s[i] for i in show_e_i]
+
         for i in range(len(se_s)):
             temp = dict()
 
@@ -118,7 +119,9 @@ class CatchHtml:
             temp["bs4_obj"] = bs4_s[i]
             temp["pos"] = self.get_coordinates(self.driver, se_s[i])
             temp["attr"] = bs4_s[i].attrs
-            temp["size"]  = se_s[i].size
+            temp["size"] = se_s[i].size
+            temp["text"] = bs4_s[i].text
+            temp["value"] = bs4_s[i].get("value")
 
             result.append(temp)
         return result
@@ -144,8 +147,8 @@ class CatchHtml:
         return self.__template("div")
 
 cat =CatchHtml()
-# cat.get("https://www.baidu.com/")
-cat.get("https://betterhomeupgrade.com/")
+cat.get("https://www.baidu.com/")
+# cat.get("https://betterhomeupgrade.com/")
 # cat.prettifyHtml()
 
-print(cat.find_button())
+print(cat.find_input())
