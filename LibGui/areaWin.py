@@ -38,7 +38,7 @@ border-width:2px;
         ''')
 
         # self.drawButton("text",30,40)
-        self.drawLine(550,44,633, 222)
+        # self.drawLine(550,44,633, 222)
         print(self.desktopSize())
 
     # 获取屏幕大小
@@ -52,11 +52,17 @@ border-width:2px;
         t.resize(h,w)
         t.move(x,y)
 
-    def drawLine(self,h,w, x, y):
+    def drawLine(self,w,h, x, y):
         t = QLineEdit(self)
-        t.resize(h,w)
+        t.resize(w,h)
+        t.setStyleSheet('''
+border:1px solid rgb(131, 131, 0);
+background-color:transparent;
+        ''')
         t.setPlaceholderText("input")
         t.move(x, y)
+        t.show()
+        print("绘制完成")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
