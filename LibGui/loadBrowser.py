@@ -16,7 +16,8 @@ class Browser(QWebEngineView):
     def __init__(self,*args,**kwargs):
         super(Browser, self).__init__(*args,**kwargs)
         # self.resize(800,600)
-        self.showFullScreen()
+        # self.showFullScreen()   # 这个方法只有纸win才有效
+        self.resize(*self.desktopSize())
 
         self.myEvent()
 
@@ -93,6 +94,12 @@ xpath('<xpath>');
     def runJavaScript(self,js:str,*args):
         self.page().runJavaScript(js,*args)
 
+
+    # 获取屏幕大小
+    def desktopSize(self):
+        d_size = QApplication.desktop().size()
+        count = QApplication.desktop().screenCount()
+        return d_size.width()//count,d_size.height()
 
     def myEvent(self):
         # 浏览器加载完成事件
