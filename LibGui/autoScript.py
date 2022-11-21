@@ -249,6 +249,7 @@ font: 9pt "等线";
             for all_attr in x:
                 print(all_attr)
                 rect = all_attr["rect"]
+                print(rect)
                 all_attr["rect"] = self.scale(rect) # 缩放,修改参数
                 pa.autoCreate(all_attr)
                 # print(all_attr)
