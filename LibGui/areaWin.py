@@ -262,6 +262,12 @@ border-width:2px;
 
         temp_list = []
         for c in children_c:
+            '''
+                在这里可以获取, 真实代码需要的操作
+                比如: 
+                    标签是input,但是真实情况是要当按钮来操作,那么这里就能获取到按钮
+            '''
+            print(c.objectName())
             temp_list.append(c.toolTip())
 
         # 发送 toptip
