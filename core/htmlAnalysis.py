@@ -6,12 +6,13 @@
 import re
 import copy
 import random
-import requests
+# import requests
 import bs4.element
-from requests.models import Response
+# from requests.models import Response
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
+
 
 
 '''
@@ -21,8 +22,11 @@ from selenium.webdriver.remote.webelement import WebElement
     按钮: button,a,div,input
 '''
 
+
+
 # 抓
 class CatchHtml:
+    HeadLess = "--headless"
     '''
         find_xxx 返回格式
         {
@@ -39,7 +43,7 @@ class CatchHtml:
     '''
     def __init__(self,executable_path="chromedriver"):
         chromeOptions = webdriver.ChromeOptions()
-        chromeOptions.add_argument("--headless")
+        chromeOptions.add_argument(CatchHtml)
         self.driver = webdriver.Chrome(executable_path=executable_path,options=chromeOptions)
         self.driver.maximize_window()
         self.bs4_html = None
