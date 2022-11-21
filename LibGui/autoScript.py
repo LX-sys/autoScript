@@ -22,6 +22,10 @@ from LibGui.areaWin import AreaWin
 class AutoScript(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
+
+        # 待渲染的标题
+        self.render_labels = ["input","a","button","select"]
+
         self.browser = Browser()
         self.setupUi()
         self.myEvent()
@@ -45,8 +49,20 @@ background-color:transparent;
 border-top:2px solid #009688;
 background-color:transparent;
 }
-#url_submit,#testbtn{
+#url_submit{
 border:1px solid #009688;
+font: 10pt "等线";
+color: rgb(255, 255, 255);
+}
+#render_btn{
+background-color: rgb(62, 62, 62);
+border:1px solid rgb(3, 158, 255);
+color:rgb(255, 255, 255);
+border-radius:5px;
+font: 10pt "等线";
+}
+#render_btn:hover,#url_submit:hover{
+border-width:2px;
 }
         ''')
         self.page = QtWidgets.QWidget()
@@ -103,8 +119,10 @@ border:1px solid #009688;
         self.operation()
 
     def writeCode(self,code:str):
+        pass
+        # print(code)
         # self.code_win.append(code)
-        self.code_win.setText(code)
+        # self.code_win.setText(code)  # 这个函数在mac运行没事,在win大概率会卡死
 
     # 代码区域
     def code_area(self):
@@ -125,42 +143,78 @@ border:1px solid #009688;
         self.url_line.setGeometry(10,10,250,30)
         self.url_submit = QPushButton("访问",self.page_op)
         self.url_submit.setObjectName("url_submit")
-        self.url_submit.setGeometry(265,10,40,30)
+        self.url_submit.setGeometry(265,10,80,30)
 
-        # test按钮
-        self.testbtn = QPushButton("input",self.page_op)
-        self.testbtn.setObjectName("testbtn")
-        self.testbtn.setGeometry(330,10,40,30)
+        # 重新渲染按钮
+        self.render_btn = QPushButton("重新渲染",self.page_op)
+        self.render_btn.setObjectName("render_btn")
+        self.render_btn.setGeometry(375,10,100,30)
 
-        self.testbtn.clicked.connect(self.test_event)
+        self.render_btn.clicked.connect(self.render_view)
 
-    def test_event(self):
+    # 等比例缩放
+    def scale(self,rect:dict):
+        '''
+        1920, 1080
+        734, 633
 
+        {'h': 44, 'w': 550, 'x': 633, 'y': 259.1875}
+        {'h': 44, 'w': 108, 'x': 1179, 'y': 259.1875}
+        :return:
+        '''
+        browser_w = self.browser.size().width()
+        browser_h = self.browser.size().height()
+        page_area_w = self.page_area.size().width()
+        page_area_h = self.page_area.size().height()
+
+        w_minification = round(page_area_w/browser_w,2)
+        h_minification = round(page_area_h/browser_h,2)
+        # print(w_minification,h_minification)
+        return {"w":round(rect["w"]*w_minification,2),
+                "h": round(rect["h"] * h_minification, 2),
+                "x": round(rect["x"] * w_minification, 2),
+                "y": round(rect["y"] * h_minification, 2)
+                }
+
+    # 渲染视图
+    def render_view(self):
+        self.page_area.delControl()
+
+        # 绘制控件
         def call(x:list,pa):
-            for con in x:
-                rect = con["rect"]
-                print(rect)
-                pa.drawLine(rect["w"],rect["h"],abs(rect["x"]), abs(rect["y"]))
-            self.setCurrentIndex(1)
+            for all_attr in x:
+                rect = all_attr["rect"]
+                all_attr["rect"] = self.scale(rect) # 缩放,修改参数
+                pa.autoCreate(all_attr)
+                print(all_attr)
 
-
-        self.browser.xpath("//input",lambda x:call(x,self.page_area))
+        # 渲染
+        for label in self.render_labels:
+            label = "//"+label
+            self.browser.xpath(label,lambda x:call(x,self.page_area))
 
 
     def url_event(self):
+        self.url_submit.setText("访问中")
         self.browser.get(self.url_line.text())
+        self.browser.show()
 
     # 下载html源码
     def down_html(self,html):
-        self.writeCode(html)
-        self.bs4_html = BeautifulSoup(html, "html.parser")
+        self.url_submit.setText("访问完成")
+        # self.writeCode(html)
+        # self.bs4_html = BeautifulSoup(html, "html.parser")
+        self.render_view()
 
 
     def myEvent(self):
         self.url_submit.clicked.connect(self.url_event)
         self.browser.contented.connect(self.down_html)
 
-
+    def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
+        print(e.size())
+        self.render_view()
+        super(AutoScript, self).resizeEvent(e)
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

@@ -15,7 +15,8 @@ class Browser(QWebEngineView):
 
     def __init__(self,*args,**kwargs):
         super(Browser, self).__init__(*args,**kwargs)
-        self.resize(800,600)
+        # self.resize(800,600)
+        self.showFullScreen()
 
         self.myEvent()
 
@@ -34,7 +35,8 @@ class Browser(QWebEngineView):
 
     def load_Finish_event(self,b:bool):
         def call(x):
-            self.contented.emit(x) # 发现圆满
+            # print(x)
+            self.contented.emit(x) # 发送源码
 
         self.page().toHtml(call)
 
@@ -64,6 +66,13 @@ function xpath(xpath_str){
     for(var i=0;i<show_nodes.length;i++){
         var res_dict = {};
         var obj= show_nodes[i].getBoundingClientRect()
+        res_dict["tagName"] = show_nodes[i].tagName;
+        if(show_nodes[i].text){
+            res_dict["text"] = show_nodes[i].text;
+        }else if(show_nodes[i].textContent){
+            res_dict["text"] = show_nodes[i].textContent;
+        }
+        
         res_dict["rect"]={"x":obj.x,"y":obj.y,"w":obj.width,"h":obj.height}
         for(var j=0;j<show_nodes[i].attributes.length;j++){
             obj = show_nodes[i].attributes[j]
