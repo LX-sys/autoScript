@@ -83,7 +83,7 @@ function xpath(xpath_str){
     }
     return res_list;
 }
-xpath("<xpath>");
+xpath('<xpath>');
         '''
 
         js=js.replace("<xpath>",xpath_str)

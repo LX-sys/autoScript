@@ -2,17 +2,22 @@
 
 
 import os
+from functools import partial
 import sys
 import math
 import json
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QStackedWidget,
     QLabel,
     QPushButton,
     QLineEdit,
-    QTextBrowser
+    QTextBrowser,
+    QGroupBox,
+    QGridLayout,
+    QCheckBox
 )
 from bs4 import BeautifulSoup
 from LibGui.loadBrowser import Browser
@@ -24,7 +29,12 @@ class AutoScript(QStackedWidget):
         super().__init__(*args,**kwargs)
 
         # 待渲染的标题
-        self.render_labels = ["input","a","button","select"]
+        '''
+            渲染顺序
+            div > 所有
+        '''
+        # 'div[@class="container main-centered"]'
+        self.render_labels = ['div[@class="container main-centered"]',"input","a","button","select"]
 
         self.browser = Browser()
         self.setupUi()
@@ -63,6 +73,12 @@ font: 10pt "等线";
 }
 #render_btn:hover,#url_submit:hover{
 border-width:2px;
+}
+#box{
+border:1px solid rgb(0, 170, 255);
+}
+#box #QCheckBox{
+font: 9pt "等线";
 }
         ''')
         self.page = QtWidgets.QWidget()
@@ -152,6 +168,31 @@ border-width:2px;
 
         self.render_btn.clicked.connect(self.render_view)
 
+        # 标签操作区域
+        self.box = QGroupBox(self.page_op)
+        self.box.setTitle("标签区")
+        self.box.setFixedSize(600,150)
+        self.box.setObjectName("box")
+        self.box.move(10,45)
+        self.box_glay = QGridLayout(self.box) # 在操作区内部添加盒子布局
+        self.box_glay.setContentsMargins(1,1,1,1)
+        self.box_glay.setSpacing(0)
+
+        # 默认所有标签都勾选
+        for l in self.render_labels:
+            cb = QCheckBox()
+            cb.setText(l)
+            cb.setCheckState(Qt.Checked)
+
+            cb.stateChanged.connect(partial(self.render_state,cb))
+            self.box_glay.addWidget(cb)
+
+    # 标签的渲染状态
+    def render_state(self,obj:QCheckBox):
+        label_name = obj.text()
+        self.page_area.setControlRender(label_name,True if obj.checkState() > 0 else False)
+        self.render_view()
+
     # 等比例缩放
     def scale(self,rect:dict):
         '''
@@ -177,8 +218,9 @@ border-width:2px;
                 }
 
     # 渲染视图
-    def render_view(self):
-        self.page_area.delControl()
+    def render_view(self,is_del=True):
+        if is_del:
+            self.page_area.delControl()
 
         # 绘制控件
         def call(x:list,pa):
@@ -186,7 +228,7 @@ border-width:2px;
                 rect = all_attr["rect"]
                 all_attr["rect"] = self.scale(rect) # 缩放,修改参数
                 pa.autoCreate(all_attr)
-                print(all_attr)
+                # print(all_attr)
 
         # 渲染
         for label in self.render_labels:
