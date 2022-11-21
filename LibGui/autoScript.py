@@ -22,6 +22,7 @@ from PyQt5.QtWidgets import (
 from bs4 import BeautifulSoup
 from LibGui.loadBrowser import Browser
 from LibGui.areaWin import AreaWin
+from core.writeCode import WriteCode
 
 
 class AutoScript(QStackedWidget):
@@ -35,6 +36,12 @@ class AutoScript(QStackedWidget):
         '''
         # 'div[@class="container main-centered"]'
         self.render_labels = ['div[@class="container main-centered"]',"input","a","button","select"]
+
+        # 写代码类
+        self.w_code = WriteCode()
+
+        # 初始化 绘制窗口的时候,会调用渲染函数,需要阻止
+        self.init_size_rander = False
 
         self.browser = Browser()
         self.setupUi()
@@ -68,10 +75,16 @@ color: rgb(255, 255, 255);
 background-color: rgb(62, 62, 62);
 border:1px solid rgb(3, 158, 255);
 color:rgb(255, 255, 255);
-border-radius:5px;
+border-radius:4px;
 font: 10pt "等线";
 }
-#render_btn:hover,#url_submit:hover{
+#write_code_btn{
+border:1px solid rgb(0, 232, 0);
+color: rgb(255, 255, 255);
+font: 10pt "等线";
+border-radius:4px;
+}
+#render_btn:hover,#url_submit:hover,#write_code_btn:hover{
 border-width:2px;
 }
 #box{
@@ -80,6 +93,7 @@ border:1px solid rgb(0, 170, 255);
 #box #QCheckBox{
 font: 9pt "等线";
 }
+
         ''')
         self.page = QtWidgets.QWidget()
         self.page.setObjectName("page")
@@ -135,9 +149,7 @@ font: 9pt "等线";
         self.operation()
 
     def writeCode(self,code:str):
-        pass
-        # print(code)
-        # self.code_win.append(code)
+        self.code_win.append(code)
         # self.code_win.setText(code)  # 这个函数在mac运行没事,在win大概率会卡死
 
     # 代码区域
@@ -164,9 +176,14 @@ font: 9pt "等线";
         # 重新渲染按钮
         self.render_btn = QPushButton("重新渲染",self.page_op)
         self.render_btn.setObjectName("render_btn")
-        self.render_btn.setGeometry(375,10,100,30)
-
+        self.render_btn.setGeometry(375,10,90,30)
         self.render_btn.clicked.connect(self.render_view)
+
+        # 生成自动化代码
+        self.write_code_btn =QPushButton("生成代码",self.page_op)
+        self.write_code_btn.setObjectName("write_code_btn")
+        self.write_code_btn.setGeometry(490,10,90,30)
+        self.write_code_btn.clicked.connect(self.w_code_event)
 
         # 标签操作区域
         self.box = QGroupBox(self.page_op)
@@ -187,11 +204,16 @@ font: 9pt "等线";
             cb.stateChanged.connect(partial(self.render_state,cb))
             self.box_glay.addWidget(cb)
 
+    # 生成代码事件
+    def w_code_event(self):
+        self.page_area.allControl()
+
     # 标签的渲染状态
     def render_state(self,obj:QCheckBox):
         label_name = obj.text()
         self.page_area.setControlRender(label_name,True if obj.checkState() > 0 else False)
-        self.render_view()
+        if self.init_size_rander: # 初始不渲染
+            self.render_view()
 
     # 等比例缩放
     def scale(self,rect:dict):
@@ -225,6 +247,7 @@ font: 9pt "等线";
         # 绘制控件
         def call(x:list,pa):
             for all_attr in x:
+                print(all_attr)
                 rect = all_attr["rect"]
                 all_attr["rect"] = self.scale(rect) # 缩放,修改参数
                 pa.autoCreate(all_attr)
@@ -232,11 +255,13 @@ font: 9pt "等线";
 
         # 渲染
         for label in self.render_labels:
-            label = "//"+label
-            self.browser.xpath(label,lambda x:call(x,self.page_area))
-
+            if self.page_area.render_dict["div" if "div" in label else label]: # 先判断控件是否需要渲染
+                label = "//"+label
+                self.browser.xpath(label,lambda x:call(x,self.page_area))
 
     def url_event(self):
+        self.init_size_rander = True # 可以渲染
+
         self.url_submit.setText("访问中")
         self.browser.get(self.url_line.text())
         self.browser.show()
@@ -248,14 +273,24 @@ font: 9pt "等线";
         # self.bs4_html = BeautifulSoup(html, "html.parser")
         self.render_view()
 
+    # 接收所有label即属性
+    def toptip_event(self,labels:list):
+        # print(labels)
+        # 逐句分析
+        for l in labels:
+            code = self.w_code.wCode(self.w_code.labelAnalysis(l))
+            self.writeCode(code)
 
     def myEvent(self):
         self.url_submit.clicked.connect(self.url_event)
         self.browser.contented.connect(self.down_html)
 
+        self.page_area.sendToptiped.connect(self.toptip_event)
+
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
         print(e.size())
-        self.render_view()
+        if self.init_size_rander:
+            self.render_view()
         super(AutoScript, self).resizeEvent(e)
 
     def retranslateUi(self):

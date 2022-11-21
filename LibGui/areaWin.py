@@ -4,9 +4,10 @@
 # @file:areaWin.py
 # @software:PyCharm
 
-
+import re
 import sys
 from PyQt5.sip import delete
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -21,8 +22,20 @@ class ControlFactory:
     def __init__(self):
         pass
 
-    def createControl(self,parent,name,rect:dict,style:str=None,text:str=None):
+    def createControl(self,parent,name,all_attr:dict,style:str=None,text:str=None):
+        rect = all_attr["rect"]
+        # print(all_attr)
         w,h,x,y = rect["w"],rect["h"],rect["x"],rect["y"]
+
+        # 合成提示
+        top = "<{}".format(all_attr["tagName"].lower())
+        for k,v in all_attr.items():
+            if k in ["tagName","text","rect"]:
+                continue
+            else:
+                top += ' {}=\"{}\"'.format(k, v)
+        top += " </{}>".format(all_attr["tagName"].lower())
+        # print("===>",top)
 
         if name == "QPushButton":
             temp = QPushButton()
@@ -62,27 +75,28 @@ class ControlFactory:
                     new_itmes.append(l)
             temp.addItems(new_itmes)
         temp.setParent(parent)
+        temp.setToolTip(top)
         temp.setStyleSheet(style)
         temp.resize(w,h)
         temp.move(x,y)
         temp.show()
         return temp
 
-    def button(self,parent,rect:dict,text:str=None):
+    def button(self,parent,all_attr:dict,text:str=None):
         style = '''
 border:1px solid rgb(85, 170, 0);
 background-color:transparent;
         '''
-        return self.createControl(parent,"QPushButton",rect,style,text)
+        return self.createControl(parent,"QPushButton",all_attr,style,text)
 
-    def input(self,parent,rect:dict,text:str=None):
+    def input(self,parent,all_attr:dict,text:str=None):
         style='''
 border:1px solid rgb(131, 131, 0);
 background-color:transparent;
         '''
-        return self.createControl(parent,"QLineEdit",rect,style,text)
+        return self.createControl(parent,"QLineEdit",all_attr,style,text)
 
-    def a(self,parent,rect:dict,text:str=None):
+    def a(self,parent,all_attr:dict,text:str=None):
         style='''
 border:1px solid rgb(5, 134, 255);
 border-top:none;
@@ -90,24 +104,26 @@ border-left:none;
 border-right:none;
 background-color:transparent;
         '''
-        return self.createControl(parent,"A_QLineEdit",rect,style,text)
+        return self.createControl(parent,"A_QLineEdit",all_attr,style,text)
 
-    def select(self,parent,rect:dict,text):
+    def select(self,parent,all_attr:dict,text):
         style='''
 border:1px solid rgb(170, 170, 255);
 color: rgb(255, 255, 255);
         '''
-        return self.createControl(parent,"QComboBox",rect,style,text)
+        return self.createControl(parent,"QComboBox",all_attr,style,text)
 
-    def div(self,parent,rect:dict,text):
+    def div(self,parent,all_attr:dict,text):
         style='''
 border:2px dotted rgb(225, 112, 169);
         '''
-        return self.createControl(parent,"DIV_QPushButton",rect,style,text)
+        return self.createControl(parent,"DIV_QPushButton",all_attr,style,text)
 
 
 # 绘制区域(渲染)
 class AreaWin(QWidget):
+    sendToptiped = pyqtSignal(list)  # 发送view上所有显示的标记即属性
+
     def  __init__(self,*args,**kwargs):
         super(AreaWin, self).__init__(*args,**kwargs)
 
@@ -122,6 +138,10 @@ class AreaWin(QWidget):
                             "select":True}
 
         self.resize(1200,800)
+
+        # 当前所有属性
+        self.cur_all_attr = None
+
         self.setObjectName("AreaWin")
         self.setStyleSheet('''
 *{
@@ -164,6 +184,9 @@ border-width:2px;
             final_type = "a"
             if rect.get("onclick"):
                 final_type = "button"
+            if rect.get("class"):
+                if "btn" in rect.get("class").lower():
+                    final_type = "button"
 
         if rect["tagName"].lower() == "button":
             final_type = "button"
@@ -190,21 +213,22 @@ border-width:2px;
 
     # 自动创建
     def autoCreate(self,all_attr):
-        rect = all_attr["rect"]
+        self.cur_all_attr = all_attr  # 保存属性
+
         final_type = self.getVerifyControlType(all_attr) # 验证控件类型
 
         if final_type == "input" and self.render_dict[final_type]:
-            self.control_factory.input(self, rect, text=all_attr.get("placeholder", None))
+            self.control_factory.input(self, all_attr, text=all_attr.get("placeholder", None))
         elif final_type == "button" and self.render_dict[final_type]:
             value = all_attr.get("value", None)
             text = all_attr.get("text", None)
-            self.control_factory.button(self, rect, text=value if value else text)
+            self.control_factory.button(self, all_attr, text=value if value else text)
         elif final_type == "a" and self.render_dict[final_type]:
-            self.control_factory.a(self, rect, text=all_attr.get("text", None))
+            self.control_factory.a(self, all_attr, text=all_attr.get("text", None))
         elif final_type == "select" and self.render_dict[final_type]:
-            self.control_factory.select(self,rect,text=all_attr.get("text", None))
+            self.control_factory.select(self,all_attr,text=all_attr.get("text", None))
         elif final_type == "div" and self.render_dict[final_type]:
-            self.control_factory.div(self, rect, text=all_attr.get("text", None))
+            self.control_factory.div(self, all_attr, text=all_attr.get("text", None))
 
         # print(final_type,"绘制完成")
 
@@ -229,6 +253,19 @@ border-width:2px;
             if c.objectName() == name:
                 c.hide()
 
+    # 计算view剩余的控件
+    def allControl(self):
+        children_c = self.children()
+
+        if not children_c:
+            return
+
+        temp_list = []
+        for c in children_c:
+            temp_list.append(c.toolTip())
+
+        # 发送 toptip
+        self.sendToptiped.emit(temp_list)
 
     # 获取屏幕大小
     def desktopSize(self):
