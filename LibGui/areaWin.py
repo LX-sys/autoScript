@@ -6,8 +6,10 @@
 
 import re
 import sys
+import math
 from PyQt5.sip import delete
-from PyQt5.QtCore import pyqtSignal,QSize
+from PyQt5.QtCore import pyqtSignal,QSize,QPoint,Qt
+from PyQt5.QtGui import QMouseEvent,QPainter,QColor,QPaintEvent,QPen
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -123,6 +125,9 @@ border:2px dotted rgb(225, 112, 169);
 # 绘制区域(渲染)
 class AreaWin(QWidget):
     sendToptiped = pyqtSignal(list)  # 发送view上所有显示的标记即属性
+    # 被框选中后的颜色
+    Select_Color = "background-color: qlineargradient(spread:pad, x1: 0, y1: 0, x2: 1, y2: 1, stop: 0.585227 rgba(98, 192, 255, 80));"
+
 
     def  __init__(self,*args,**kwargs):
         super(AreaWin, self).__init__(*args,**kwargs)
@@ -139,9 +144,14 @@ class AreaWin(QWidget):
 
         self.resize(1200,800)
 
+        # 这四条属性,用于绘制选择区域
+        self.LeftDown = False
+        self.PointPos = QPoint(0,0)
+        self.s_pos = QPoint(0,0)
+        self.e_pos = QPoint(0,0)
+
         # 当前所有属性
         self.cur_all_attr = None
-
         self.setObjectName("AreaWin")
         self.setStyleSheet('''
 *{
@@ -174,6 +184,7 @@ border-width:2px;
         }
         self.autoCreate(attr)
         # print(self.desktopSize())
+        # self.detectionControls(0,0,0,0)
 
     # 通过属性来验证控件的可视类型
     def getVerifyControlType(self,rect:dict):
@@ -309,6 +320,70 @@ border-width:2px;
         d_size = QApplication.desktop().size()
         count = QApplication.desktop().screenCount()
         return d_size.width()//count,d_size.height()
+
+    def mousePressEvent(self, e: QMouseEvent) -> None:
+        if e.button() == 1:
+            self.LeftDown = True
+            self.s_pos = e.pos()
+        super(AreaWin, self).mousePressEvent(e)
+
+    # 检测框选范围内的渲染控件
+    def detectionControls(self):
+        if self.s_pos.x() > self.e_pos.x() and self.s_pos.y() > self.e_pos.y():
+            self.s_pos,self.e_pos = self.e_pos,self.s_pos
+
+        x, y = self.s_pos.x(), self.s_pos.y()
+        w, h = self.e_pos.x() - x, self.e_pos.y() - y
+        children_c = self.children()
+
+        if not children_c:
+            return
+
+        for c in children_c:
+            tx,ty = c.pos().x(),c.pos().y()
+            old_style = c.styleSheet()  # 还原样式
+            if tx > x and tx< w+x and ty > y and ty <h+y:
+                style = c.styleSheet()
+                if self.Select_Color not in style:
+                    style += self.Select_Color
+                c.setStyleSheet(style)
+                print(c.text())
+            else:
+                if self.Select_Color in old_style:
+                    old_style = old_style.replace(self.Select_Color,"")
+                c.setStyleSheet(old_style)
+
+
+    def mouseReleaseEvent(self, e:QMouseEvent) -> None:
+        self.LeftDown = False
+        # 鼠标左键弹起时检测
+        self.detectionControls()
+        super(AreaWin, self).mouseReleaseEvent(e)
+
+    def paintEvent(self, e: QPaintEvent) -> None:
+        if self.LeftDown:
+            painter = QPainter()
+            painter.begin(self)
+            open_ = QPen()
+            open_.setColor(QColor(182, 182, 182))
+            open_.setStyle(Qt.DashDotLine)
+            painter.setPen(open_)
+            x,y = self.s_pos.x(),self.s_pos.y()
+            w,h = self.e_pos.x()-x,self.e_pos.y()-y
+            painter.drawRect(x,y,w,h)
+
+            # 需要检测的范围
+            tx,ty = 0,0
+            if tx > x and w+x and ty > y and ty <h+y:
+                print("范围")
+
+            painter.end()
+
+    def mouseMoveEvent(self, e:QMouseEvent) -> None:
+        if self.LeftDown:
+            self.e_pos = e.pos()
+            self.update()
+        super(AreaWin, self).mouseMoveEvent(e)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
