@@ -7,7 +7,7 @@
 import re
 import sys
 from PyQt5.sip import delete
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal,QSize
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -166,6 +166,13 @@ border-width:2px;
         ''')
 
         self.control_factory = ControlFactory()
+        attr = {
+            "tagName":"button",
+            "id":"test",
+            "rect":{"w":100,"h":30,"x":50,"y":50},
+            "text":"测试"
+        }
+        self.autoCreate(attr)
         # print(self.desktopSize())
 
     # 通过属性来验证控件的可视类型
@@ -272,6 +279,30 @@ border-width:2px;
 
         # 发送 toptip
         self.sendToptiped.emit(temp_list)
+
+    # 等比例缩放
+    def scale(self,browser_size:QSize, rect: dict):
+        '''
+
+        :param browser_size: 浏览器大小
+        :param rect: 元素的 宽高,位置
+        :return:
+        '''
+        if browser_size is None:
+            browser_w,browser_h = self.desktopSize()
+        else:
+            browser_w,browser_h = browser_size.width(),browser_size.height()
+        page_area_w = self.width()
+        page_area_h = self.height()
+
+        w_minification = round(page_area_w / browser_w, 2)
+        h_minification = round(page_area_h / browser_h, 2)
+        # print(w_minification,h_minification)
+        return {"w": round(rect["w"] * w_minification, 2),
+                "h": round(rect["h"] * h_minification, 2),
+                "x": round(rect["x"] * w_minification, 2),
+                "y": round(rect["y"] * h_minification, 2)
+                }
 
     # 获取屏幕大小
     def desktopSize(self):
