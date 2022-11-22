@@ -24,6 +24,9 @@ from LibGui.loadBrowser import Browser
 from LibGui.areaWin import AreaWin
 from core.writeCode import WriteCode
 
+'''
+    自动写代码训练机 主界面
+'''
 
 class AutoScript(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
@@ -215,30 +218,6 @@ font: 9pt "等线";
         if self.init_size_rander: # 初始不渲染
             self.render_view()
 
-    # 等比例缩放
-    def scale(self,rect:dict):
-        '''
-        1920, 1080
-        734, 633
-
-        {'h': 44, 'w': 550, 'x': 633, 'y': 259.1875}
-        {'h': 44, 'w': 108, 'x': 1179, 'y': 259.1875}
-        :return:
-        '''
-        browser_w = self.browser.size().width()
-        browser_h = self.browser.size().height()
-        page_area_w = self.page_area.size().width()
-        page_area_h = self.page_area.size().height()
-
-        w_minification = round(page_area_w/browser_w,2)
-        h_minification = round(page_area_h/browser_h,2)
-        # print(w_minification,h_minification)
-        return {"w":round(rect["w"]*w_minification,2),
-                "h": round(rect["h"] * h_minification, 2),
-                "x": round(rect["x"] * w_minification, 2),
-                "y": round(rect["y"] * h_minification, 2)
-                }
-
     # 渲染视图
     def render_view(self,is_del=True):
         if is_del:
@@ -247,12 +226,8 @@ font: 9pt "等线";
         # 绘制控件
         def call(x:list,pa):
             for all_attr in x:
-                print(all_attr)
-                rect = all_attr["rect"]
-                print(rect)
-                all_attr["rect"] = self.scale(rect) # 缩放,修改参数
+                all_attr["rect"] = pa.scale(self.browser.size(),all_attr["rect"]) # 缩放,修改参数
                 pa.autoCreate(all_attr)
-                # print(all_attr)
 
         # 渲染
         for label in self.render_labels:
@@ -270,17 +245,15 @@ font: 9pt "等线";
     # 下载html源码
     def down_html(self,html):
         self.url_submit.setText("访问完成")
-        # self.writeCode(html)
-        # self.bs4_html = BeautifulSoup(html, "html.parser")
         self.render_view()
 
-    # 接收所有label即属性
+    # 接收所有label即属性,进行分析,生成代码
     def toptip_event(self,labels:list):
-        # print(labels)
         # 逐句分析
         for l in labels:
             code = self.w_code.wCode(self.w_code.labelAnalysis(l))
-            self.writeCode(code)
+            if code:
+                self.writeCode(code)
 
     def myEvent(self):
         self.url_submit.clicked.connect(self.url_event)
@@ -289,7 +262,6 @@ font: 9pt "等线";
         self.page_area.sendToptiped.connect(self.toptip_event)
 
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
-        print(e.size())
         if self.init_size_rander:
             self.render_view()
         super(AutoScript, self).resizeEvent(e)
