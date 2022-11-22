@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
     QComboBox
 )
 from LibGui.r_controls import *
-
+from LibGui.controlsType import ControlsType as Ct
 
 # 控件工厂
 class ControlFactory:
@@ -27,7 +27,6 @@ class ControlFactory:
 
     def createControl(self,parent,name,all_attr:dict,style:str=None,text:str=None):
         rect = all_attr["rect"]
-        # print(all_attr)
         w,h,x,y = rect["w"],rect["h"],rect["x"],rect["y"]
 
         # 合成提示
@@ -236,17 +235,17 @@ border-width:2px;
 
         final_type = self.getVerifyControlType(all_attr) # 验证控件类型
 
-        if final_type == "input" and self.render_dict[final_type]:
+        if final_type == Ct.Input and self.render_dict[final_type]:
             self.control_factory.input(self, all_attr, text=all_attr.get("placeholder", None))
-        elif final_type == "button" and self.render_dict[final_type]:
+        elif final_type == Ct.Button and self.render_dict[final_type]:
             value = all_attr.get("value", None)
             text = all_attr.get("text", None)
             self.control_factory.button(self, all_attr, text=value if value else text)
-        elif final_type == "a" and self.render_dict[final_type]:
+        elif final_type == Ct.A and self.render_dict[final_type]:
             self.control_factory.a(self, all_attr, text=all_attr.get("text", None))
-        elif final_type == "select" and self.render_dict[final_type]:
+        elif final_type == Ct.Select and self.render_dict[final_type]:
             self.control_factory.select(self,all_attr,text=all_attr.get("text", None))
-        elif final_type == "div" and self.render_dict[final_type]:
+        elif final_type == Ct.Div and self.render_dict[final_type]:
             self.control_factory.div(self, all_attr, text=all_attr.get("text", None))
 
         # print(final_type,"绘制完成")
@@ -323,7 +322,7 @@ border-width:2px;
         return d_size.width()//count,d_size.height()
 
     def mousePressEvent(self, e: QMouseEvent) -> None:
-        if e.button() == 1:
+        if e.button() == Qt.LeftButton: # 鼠标左键按下
             self.LeftDown = True
             self.s_pos = e.pos()
         super(AreaWin, self).mousePressEvent(e)
@@ -375,12 +374,6 @@ border-width:2px;
             x,y = self.s_pos.x(),self.s_pos.y()
             w,h = self.e_pos.x()-x,self.e_pos.y()-y
             painter.drawRect(x,y,w,h)
-
-            # 需要检测的范围
-            tx,ty = 0,0
-            if tx > x and w+x and ty > y and ty <h+y:
-                print("范围")
-
             painter.end()
 
     def mouseMoveEvent(self, e:QMouseEvent) -> None:

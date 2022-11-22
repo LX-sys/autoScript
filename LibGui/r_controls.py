@@ -8,7 +8,7 @@ import sys
 from PyQt5.QtCore import Qt,QPoint
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox
-
+from LibGui.controlsType import ControlsType as Ct
 
 # 让所有渲染的控件都具有右键功能
 
@@ -27,7 +27,16 @@ class RQWidget(QWidget):
         # 创建菜单
         menu = QMenu()
 
-        copy_name = menu.addAction("复制名称")
+        keep_controls = menu.addAction("保留控件")
+        del_controls = menu.addAction("销毁控件")
+        it_type = menu.addAction("标记为其他类型")
+        it=QMenu()
+        it.addAction(Ct.Input)
+        it.addAction(Ct.Button)
+        it.addAction(Ct.A)
+        it.addAction(Ct.Select)
+        it.addAction(Ct.Div)
+        it_type.setMenu(it)
         # 显示菜单
         menu.exec_(QCursor.pos())
 
