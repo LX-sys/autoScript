@@ -20,7 +20,7 @@ class WriteCode:
         attr = re.findall(r' (.*?=".*?")', label_str)
         attr_dict = dict()
         for a in attr:
-            k,v = a.split("=")
+            k,v = a.split("=",1)
             attr_dict[k]=v
 
         if "id" in attr_dict:
@@ -39,6 +39,10 @@ class WriteCode:
         :param xpath:
         :return:
         '''
+        if not xpath:
+            print("xpath 为空")
+            return
+
         if "input" in xpath:
             return "am.send(am.see(\'xpath\',\'{}\')[0],'xxx')".format(xpath)
 
