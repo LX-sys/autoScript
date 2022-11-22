@@ -5,9 +5,10 @@
 import os
 import sys
 import time
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QUrl,pyqtSignal
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView,QWebEngineProfile
 
 
 class Browser(QWebEngineView):
@@ -15,9 +16,13 @@ class Browser(QWebEngineView):
 
     def __init__(self,*args,**kwargs):
         super(Browser, self).__init__(*args,**kwargs)
+
         # self.resize(800,600)
         # self.showFullScreen()   # 这个方法只有纸win才有效
         self.resize(*self.desktopSize())
+        print(self.page().profile().httpUserAgent())
+        print(self.page().profile().httpCacheType())
+        print(self.page().profile().httpAcceptLanguage())
 
         self.myEvent()
 
@@ -93,7 +98,6 @@ xpath('<xpath>');
 
     def runJavaScript(self,js:str,*args):
         self.page().runJavaScript(js,*args)
-
 
     # 获取屏幕大小
     def desktopSize(self):
