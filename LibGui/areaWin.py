@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QComboBox
 )
+from LibGui.r_controls import *
 
 
 # 控件工厂
@@ -40,35 +41,35 @@ class ControlFactory:
         # print("===>",top)
 
         if name == "QPushButton":
-            temp = QPushButton()
+            temp = PushButton()
             temp.setObjectName("QPushButton")
             if text:
                 temp.setText(text.strip().replace("\n",""))
             else:
                 temp.setText("按钮")
         elif name == "DIV_QPushButton":
-            temp = QPushButton()
+            temp = PushButton()
             temp.setObjectName("DIV_QPushButton")
             if text:
                 temp.setText(text.strip().replace("\n",""))
             else:
                 temp.setText("Div")
         elif name == "QLineEdit":
-            temp = QLineEdit()
+            temp = LineEdit()
             temp.setObjectName("QLineEdit")
             if text:
                 temp.setPlaceholderText(text.strip().replace("\n",""))
             else:
                 temp.setPlaceholderText("input")
         elif name == "A_QLineEdit":
-            temp = QLineEdit()
+            temp = LineEdit()
             temp.setObjectName("A_QLineEdit")
             if text:
                 temp.setPlaceholderText(text.strip().replace("\n", ""))
             else:
                 temp.setPlaceholderText("A_label")
         elif name == "QComboBox":
-            temp = QComboBox()
+            temp = ComboBox()
             temp.setObjectName("QComboBox")
             items = [l.strip().replace("\n","") for l in text.split("\n")]
             new_itmes =[]
@@ -146,9 +147,9 @@ class AreaWin(QWidget):
 
         # 这四条属性,用于绘制选择区域
         self.LeftDown = False
-        self.PointPos = QPoint(0,0)
         self.s_pos = QPoint(0,0)
         self.e_pos = QPoint(0,0)
+        self.show_border = False  # 是否显示线框
 
         # 当前所有属性
         self.cur_all_attr = None
@@ -352,6 +353,9 @@ border-width:2px;
                 if self.Select_Color in old_style:
                     old_style = old_style.replace(self.Select_Color,"")
                 c.setStyleSheet(old_style)
+
+        if self.show_border is False:
+            self.update()
 
 
     def mouseReleaseEvent(self, e:QMouseEvent) -> None:
