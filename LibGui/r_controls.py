@@ -7,21 +7,27 @@
 import sys
 from PyQt5.QtCore import Qt,QPoint
 from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox
-from LibGui.controlsType import ControlsType as Ct
+from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox,QGroupBox
+from core.controlsType import ControlsType as Ct
 
-# 让所有渲染的控件都具有右键功能
-
-class RQWidget(QWidget):
+# 让所有渲染的控件都具有右键功能的基类
+class RQWidgetABC(QWidget):
     def __init__(self,*args,**kwargs):
-        super(RQWidget, self).__init__(*args,**kwargs)
+        super(RQWidgetABC, self).__init__(*args,**kwargs)
         self.resize(1200,800)
 
         # 注册右键菜单
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.menu_Event)
 
+    def menu_Event(self,pos:QPoint):
+        pass
 
+
+# 标签类
+class LabelWidget(RQWidgetABC):
+    def __init__(self,*args,**kwargs):
+        super(LabelWidget, self).__init__(*args,**kwargs)
 
     def menu_Event(self,pos:QPoint):
         # 创建菜单
@@ -41,24 +47,37 @@ class RQWidget(QWidget):
         menu.exec_(QCursor.pos())
 
 
-class PushButton(QPushButton,RQWidget):
+class PushButton(QPushButton,LabelWidget):
     def __init__(self,*args,**kwargs):
         super(PushButton, self).__init__(*args,**kwargs)
 
 
-class LineEdit(QLineEdit,RQWidget):
+class LineEdit(QLineEdit,LabelWidget):
     def __init__(self,*args,**kwargs):
         super(LineEdit, self).__init__(*args,**kwargs)
 
 
-class ComboBox(QComboBox,RQWidget):
+# -------------------------------------
+class GroupBox(QGroupBox,RQWidgetABC):
     def __init__(self,*args,**kwargs):
-        super(ComboBox, self).__init__(*args,**kwargs)
+        super(GroupBox, self).__init__(*args,**kwargs)
+
+    def menu_Event(self,pos:QPoint):
+        # 创建菜单
+        menu = QMenu()
+
+        add_xpath = menu.addAction("添加xpath")
+        del_xapth = menu.addAction("移除xpath")
+
+        # 显示菜单
+        menu.exec_(QCursor.pos())
+
+# ----------------------------
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    win = LineEdit()
+    win = GroupBox()
     win.show()
 
     sys.exit(app.exec_())
