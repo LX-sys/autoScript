@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 # @time:2022/11/1917:52
 # @author:LX
-# @file:areaWin.py
+# @file:RendererWin.py
 # @software:PyCharm
 
 import re
@@ -123,14 +123,14 @@ border:2px dotted rgb(225, 112, 169);
 
 
 # 绘制区域(渲染)
-class AreaWin(QWidget):
+class RendererWin(QWidget):
     sendToptiped = pyqtSignal(list)  # 发送view上所有显示的标记即属性
     # 被框选中后的颜色
     Select_Color = "background-color: qlineargradient(spread:pad, x1: 0, y1: 0, x2: 1, y2: 1, stop: 0.585227 rgba(98, 192, 255, 80));"
 
 
     def  __init__(self,*args,**kwargs):
-        super(AreaWin, self).__init__(*args,**kwargs)
+        super(RendererWin, self).__init__(*args,**kwargs)
 
         # 控件渲染字典
         '''
@@ -152,12 +152,12 @@ class AreaWin(QWidget):
 
         # 当前所有属性
         self.cur_all_attr = None
-        self.setObjectName("AreaWin")
+        self.setObjectName("RendererWin")
         self.setStyleSheet('''
 *{
 color:#fff;
 }
-#AreaWin{
+#RendererWin{
 background-color: rgb(33, 33, 33);
 }
 QPushButton{
@@ -250,36 +250,30 @@ border-width:2px;
 
         # print(final_type,"绘制完成")
 
-    # 销毁所有控件
-    def delControl(self):
+    # 返回所有控件
+    def __control(self):
         children_c = self.children()
+
         if not children_c:
             return
+        return children_c
 
-        for c in children_c:
+    # 销毁所有控件
+    def delControl(self):
+        for c in self.__control():
             delete(c)
         print("销毁所有控件完成")
 
     # 隐藏控件
     def hideControl(self,name):
-        children_c = self.children()
-
-        if not children_c:
-            return
-
-        for c in children_c:
+        for c in self.__control():
             if c.objectName() == name:
                 c.hide()
 
     # 计算view剩余的控件
     def allControl(self):
-        children_c = self.children()
-
-        if not children_c:
-            return
-
         temp_list = []
-        for c in children_c:
+        for c in self.__control():
             '''
                 在这里可以获取, 真实代码需要的操作
                 比如: 
@@ -325,7 +319,7 @@ border-width:2px;
         if e.button() == Qt.LeftButton: # 鼠标左键按下
             self.LeftDown = True
             self.s_pos = e.pos()
-        super(AreaWin, self).mousePressEvent(e)
+        super(RendererWin, self).mousePressEvent(e)
 
     # 检测框选范围内的渲染控件
     def detectionControls(self):
@@ -334,20 +328,18 @@ border-width:2px;
 
         x, y = self.s_pos.x(), self.s_pos.y()
         w, h = self.e_pos.x() - x, self.e_pos.y() - y
-        children_c = self.children()
 
-        if not children_c:
-            return
-
-        for c in children_c:
+        for c in self.__control():
             tx,ty = c.pos().x(),c.pos().y()
             old_style = c.styleSheet()  # 还原样式
             if tx > x and tx< w+x and ty > y and ty <h+y:
                 style = c.styleSheet()
+                # .... 其他操作
+
+                # ....
                 if self.Select_Color not in style:
                     style += self.Select_Color
                 c.setStyleSheet(style)
-                print(c.text())
             else:
                 if self.Select_Color in old_style:
                     old_style = old_style.replace(self.Select_Color,"")
@@ -361,7 +353,7 @@ border-width:2px;
         self.LeftDown = False
         # 鼠标左键弹起时检测
         self.detectionControls()
-        super(AreaWin, self).mouseReleaseEvent(e)
+        super(RendererWin, self).mouseReleaseEvent(e)
 
     def paintEvent(self, e: QPaintEvent) -> None:
         if self.LeftDown:
@@ -380,12 +372,12 @@ border-width:2px;
         if self.LeftDown:
             self.e_pos = e.pos()
             self.update()
-        super(AreaWin, self).mouseMoveEvent(e)
+        super(RendererWin, self).mouseMoveEvent(e)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    win = AreaWin()
+    win = RendererWin()
     win.show()
 
     sys.exit(app.exec_())
