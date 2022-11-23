@@ -14,7 +14,7 @@ class ControlsType:
     Select = "select"
 
 
-# 控件样式
+# 控件样式(这里的 key要与控件类型一致)
 class ControlsStyle:
     CStyle = {
         "input":'''
