@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
 )
 from bs4 import BeautifulSoup
 from LibGui.loadBrowser import Browser
-from LibGui.areaWin import AreaWin
+from LibGui.RendererWin import RendererWin
 from core.writeCode import WriteCode
 
 '''
@@ -62,7 +62,7 @@ color:#fff;
 border-left:2px solid #455A64;
 background-color: #212121;
 }
-#page_area{
+#render{
 background-color:transparent;
 }
 #operation_area{
@@ -112,10 +112,10 @@ font: 9pt "等线";
         self.verticalLayout.setObjectName("verticalLayout")
         self.area_draw = QtWidgets.QStackedWidget(self.widget)
         self.area_draw.setObjectName("area_draw")
-        # self.page_area = QtWidgets.QWidget()
-        self.page_area = AreaWin()
-        self.page_area.setObjectName("page_area")
-        self.area_draw.addWidget(self.page_area)
+        # self.render = QtWidgets.QWidget()
+        self.render = RendererWin()
+        self.render.setObjectName("render")
+        self.area_draw.addWidget(self.render)
         self.page_3 = QtWidgets.QWidget()
         self.page_3.setObjectName("page_3")
         self.area_draw.addWidget(self.page_3)
@@ -209,19 +209,19 @@ font: 9pt "等线";
 
     # 生成代码事件
     def w_code_event(self):
-        self.page_area.allControl()
+        self.render.allControl()
 
     # 标签的渲染状态
     def render_state(self,obj:QCheckBox):
         label_name = obj.text()
-        self.page_area.setControlRender(label_name,True if obj.checkState() > 0 else False)
+        self.render.setControlRender(label_name,True if obj.checkState() > 0 else False)
         if self.init_size_rander: # 初始不渲染
             self.render_view()
 
     # 渲染视图
     def render_view(self,is_del=True):
         if is_del:
-            self.page_area.delControl()
+            self.render.delControl()
 
         # 绘制控件
         def call(x:list,pa):
@@ -231,9 +231,9 @@ font: 9pt "等线";
 
         # 渲染
         for label in self.render_labels:
-            if self.page_area.render_dict["div" if "div" in label else label]: # 先判断控件是否需要渲染
+            if self.render.render_dict["div" if "div" in label else label]: # 先判断控件是否需要渲染
                 label = "//"+label
-                self.browser.xpath(label,lambda x:call(x,self.page_area))
+                self.browser.xpath(label,lambda x:call(x,self.render))
 
     def url_event(self):
         self.init_size_rander = True # 可以渲染
@@ -259,7 +259,7 @@ font: 9pt "等线";
         self.url_submit.clicked.connect(self.url_event)
         self.browser.contented.connect(self.down_html)
 
-        self.page_area.sendToptiped.connect(self.toptip_event)
+        self.render.sendToptiped.connect(self.toptip_event)
 
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
         if self.init_size_rander:
