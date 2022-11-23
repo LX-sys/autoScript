@@ -4,22 +4,12 @@
 # @file:RendererWin.py
 # @software:PyCharm
 
-import re
 import sys
-import math
 from PyQt5.sip import delete
-from PyQt5.QtCore import pyqtSignal,QSize,QPoint,Qt
+from PyQt5.QtCore import pyqtSignal,QSize
 from PyQt5.QtGui import QMouseEvent,QPainter,QColor,QPaintEvent,QPen
-from PyQt5.QtWidgets import (
-    QApplication,
-    QWidget,
-    QPushButton,
-    QLineEdit,
-    QComboBox
-)
+from core.controlsType import ControlsType as Ct
 from LibGui.r_controls import *
-from LibGui.controlsType import ControlsType as Ct
-
 # 控件工厂
 class ControlFactory:
     def __init__(self):
@@ -136,8 +126,8 @@ class RendererWin(QWidget):
         '''
             这个字典决定  该控件是否被渲染出来
         '''
-        self.render_dict = {"div":True,
-                            "a":True,
+        self.render_dict = {"div":False,
+                            "a":False,
                             "input":True,
                             "button":True,
                             "select":True}
@@ -255,7 +245,7 @@ border-width:2px;
         children_c = self.children()
 
         if not children_c:
-            return
+            return []
         return children_c
 
     # 销毁所有控件
