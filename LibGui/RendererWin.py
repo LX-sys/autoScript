@@ -177,7 +177,6 @@ border-width:2px;
             return True
         return False
 
-
     # 通过属性来验证控件的可视类型
     def getVerifyControlType(self,rect:dict):
         final_type = None
@@ -251,10 +250,10 @@ border-width:2px;
         return children_c
 
     # 销毁所有控件
-    def delControl(self):
+    def delAllControl(self):
         for c in self.__control():
             delete(c)
-        print("销毁所有控件完成")
+        # print("销毁所有控件完成")
 
     # 隐藏控件
     def hideControl(self,name):
@@ -340,6 +339,24 @@ border-width:2px;
         if self.show_border is False:
             self.update()
 
+    # 渲染视图
+    def render_view(self,browser,is_del=True):
+        if is_del:
+            self.delAllControl()
+
+        # 绘制控件
+        def call(x:list):
+            for all_attr in x:
+                print(all_attr)
+                all_attr["rect"] = self.scale(browser.size(),all_attr["rect"]) # 缩放,修改参数
+                self.autoCreate(all_attr)
+
+        # 渲染
+        for _xpath,check in self.render_dict.items():
+            if self.render_dict.get("div" if "div" in _xpath else _xpath,None):# 先判断控件是否需要渲染
+                _xpath = "//"+_xpath
+                if check:
+                    browser.xpath(_xpath,lambda x:call(x))
 
     def mouseReleaseEvent(self, e:QMouseEvent) -> None:
         self.LeftDown = False

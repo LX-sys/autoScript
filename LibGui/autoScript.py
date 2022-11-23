@@ -38,7 +38,7 @@ class AutoScript(QStackedWidget):
             渲染顺序
             div > 所有
         '''
-
+        self.setWindowTitle("ACode")
         # 写代码类
         self.w_code = WriteCode()
 
@@ -48,7 +48,7 @@ class AutoScript(QStackedWidget):
         self.browser = Browser()
         self.setupUi()
         self.myEvent()
-    
+
     def setupUi(self):
         self.setObjectName("st_win")
         self.resize(1235, 844)
@@ -178,7 +178,7 @@ font: 9pt "等线";
         self.render_btn = QPushButton("重新渲染",self.page_op)
         self.render_btn.setObjectName("render_btn")
         self.render_btn.setGeometry(375,10,90,30)
-        self.render_btn.clicked.connect(self.render_view)
+        self.render_btn.clicked.connect(lambda :self.render.render_view(self.browser))
 
         # 生成自动化代码
         self.write_code_btn =QPushButton("生成代码",self.page_op)
@@ -227,27 +227,8 @@ font: 9pt "等线";
         label_name = obj.text()
         self.render.setControlRender(label_name,True if obj.checkState() > 0 else False)
         if self.init_size_rander: # 初始不渲染
-            self.render_view()
+            self.render.render_view(self.browser)
 
-    # 渲染视图
-    def render_view(self,is_del=True):
-        if is_del:
-            self.render.delControl()
-
-        # 绘制控件
-        def call(x:list,pa):
-            for all_attr in x:
-                all_attr["rect"] = pa.scale(self.browser.size(),all_attr["rect"]) # 缩放,修改参数
-                pa.autoCreate(all_attr)
-
-        # 渲染
-        for _xpath,check in self.render.render_dict.items():
-            if self.render.render_dict.get("div" if "div" in _xpath else _xpath,None):# 先判断控件是否需要渲染
-                _xpath = "//"+_xpath
-                if check:
-                    self.browser.xpath(_xpath,lambda x:call(x,self.render))
-            else:
-                print("無效xpath:",_xpath)
 
     def url_event(self):
         self.init_size_rander = True # 可以渲染
@@ -259,7 +240,7 @@ font: 9pt "等线";
     # 下载html源码
     def down_html(self,html):
         self.url_submit.setText("访问完成")
-        self.render_view()  # 首次渲染
+        self.render.render_view(self.browser)  # 首次渲染
 
     # 接收所有label即属性,进行分析,生成代码
     def toptip_event(self,labels:list):
@@ -271,7 +252,6 @@ font: 9pt "等线";
 
     # 操作区右键信号事件
     def operation_right(self,model:str):
-
         if model == self.box.ADD:
             xpath,ok=QInputDialog.getText(None,"添加","输入xpath",QLineEdit.Normal,"")
             if ok and xpath:
@@ -288,7 +268,7 @@ font: 9pt "等线";
                 if self.render.delXpath(xpath):
                     self.delXpathCheckBox(xpath)
                     # 移除完成之后,重新渲染一次
-                    self.render_view()
+                    self.render.render_view(self.browser)
 
     def myEvent(self):
         self.url_submit.clicked.connect(self.url_event)
@@ -301,12 +281,11 @@ font: 9pt "等线";
 
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
         if self.init_size_rander:
-            self.render_view()
+            self.render.render_view(self.browser)
         super(AutoScript, self).resizeEvent(e)
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("self", "StackedWidget"))
 
 
 if __name__ == '__main__':
