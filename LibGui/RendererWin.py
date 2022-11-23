@@ -8,8 +8,10 @@ import sys
 from PyQt5.sip import delete
 from PyQt5.QtCore import pyqtSignal,QSize
 from PyQt5.QtGui import QMouseEvent,QPainter,QColor,QPaintEvent,QPen
-from core.controlsType import ControlsType as Ct
+from core.controlsAttr import ControlsType as Ct,ControlsStyle as Cs
 from LibGui.r_controls import *
+
+
 # 控件工厂
 class ControlFactory:
     def __init__(self):
@@ -75,40 +77,23 @@ class ControlFactory:
         return temp
 
     def button(self,parent,all_attr:dict,text:str=None):
-        style = '''
-border:1px solid rgb(85, 170, 0);
-background-color:transparent;
-        '''
+        style = Cs.CStyle[Ct.Button]
         return self.createControl(parent,"QPushButton",all_attr,style,text)
 
     def input(self,parent,all_attr:dict,text:str=None):
-        style='''
-border:1px solid rgb(131, 131, 0);
-background-color:transparent;
-        '''
+        style = Cs.CStyle[Ct.Input]
         return self.createControl(parent,"QLineEdit",all_attr,style,text)
 
     def a(self,parent,all_attr:dict,text:str=None):
-        style='''
-border:1px solid rgb(5, 134, 255);
-border-top:none;
-border-left:none;
-border-right:none;
-background-color:transparent;
-        '''
+        style = Cs.CStyle[Ct.A]
         return self.createControl(parent,"A_QLineEdit",all_attr,style,text)
 
     def select(self,parent,all_attr:dict,text):
-        style='''
-border:1px solid rgb(170, 170, 255);
-color: rgb(255, 255, 255);
-        '''
+        style = Cs.CStyle[Ct.Select]
         return self.createControl(parent,"QComboBox",all_attr,style,text)
 
     def div(self,parent,all_attr:dict,text):
-        style='''
-border:2px dotted rgb(225, 112, 169);
-        '''
+        style = Cs.CStyle[Ct.Div]
         return self.createControl(parent,"DIV_QPushButton",all_attr,style,text)
 
 
