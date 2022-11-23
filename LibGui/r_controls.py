@@ -8,7 +8,7 @@ import sys
 from PyQt5.QtCore import Qt,QPoint,pyqtSignal
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox,QGroupBox
-from core.controlsType import ControlsType as Ct
+from core.controlsAttr import ControlsType as Ct
 
 # 让所有渲染的控件都具有右键功能的基类
 class RQWidgetABC(QWidget):
