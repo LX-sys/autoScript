@@ -97,12 +97,37 @@ class ControlFactory:
         return self.createControl(parent,"DIV_QPushButton",all_attr,style,text)
 
 
+# 控件数据管理系统
+class ControlsAttrSys:
+    def __init__(self):
+        self.all_attr = []  # type:list
+
+    def setAllAttr(self, attr_list:list):
+        self.all_attr = attr_list
+
+    def setAttr(self,key,value):
+        for allattr in self.all_attr:
+            if key in allattr:
+                allattr[key] = value
+
+    def append(self,attr:dict):
+        self.all_attr.append(attr)
+
+
+    def clear(self):
+        self.all_attr.clear()
+
+    # 全部更新
+    def allUpDate(self,attr_list:list):
+        self.clear()
+        self.setAllAttr(attr_list)
+
+
 # 绘制区域(渲染)
 class RendererWin(QWidget):
     sendToptiped = pyqtSignal(list)  # 发送view上所有显示的标记即属性
     # 被框选中后的颜色
     Select_Color = "background-color: qlineargradient(spread:pad, x1: 0, y1: 0, x2: 1, y2: 1, stop: 0.585227 rgba(98, 192, 255, 80));"
-
 
     def  __init__(self,*args,**kwargs):
         super(RendererWin, self).__init__(*args,**kwargs)
@@ -125,8 +150,9 @@ class RendererWin(QWidget):
         self.e_pos = QPoint(0,0)
         self.show_border = False  # 是否显示线框
 
-        # 当前所有属性
-        self.cur_all_attr = None
+        # 渲染出控件数据管理系统
+        self.c_attr_sys = ControlsAttrSys()
+
         self.setObjectName("RendererWin")
         self.setStyleSheet('''
 *{
@@ -222,7 +248,8 @@ border-width:2px;
 
     # 自动创建
     def autoCreate(self,all_attr):
-        self.cur_all_attr = all_attr  # 保存属性
+        # 保存属性
+        self.c_attr_sys.append(all_attr)
 
         final_type = self.getVerifyControlType(all_attr) # 验证控件类型
 
@@ -294,10 +321,10 @@ border-width:2px;
         w_minification = round(page_area_w / browser_w, 2)
         h_minification = round(page_area_h / browser_h, 2)
         # print(w_minification,h_minification)
-        return {"w": round(rect["w"] * w_minification, 2),
-                "h": round(rect["h"] * h_minification, 2),
-                "x": round(rect["x"] * w_minification, 2),
-                "y": round(rect["y"] * h_minification, 2)
+        return {"w": int(rect["w"] * w_minification),
+                "h": int(rect["h"] * h_minification),
+                "x": int(rect["x"] * w_minification),
+                "y": int(rect["y"] * h_minification)
                 }
 
     # 获取屏幕大小
@@ -344,10 +371,11 @@ border-width:2px;
         if is_del:
             self.delAllControl()
 
+        self.c_attr_sys.clear()
+
         # 绘制控件
         def call(x:list):
             for all_attr in x:
-                print(all_attr)
                 all_attr["rect"] = self.scale(browser.size(),all_attr["rect"]) # 缩放,修改参数
                 self.autoCreate(all_attr)
 
