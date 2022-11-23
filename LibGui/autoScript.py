@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup
 from LibGui.loadBrowser import Browser
 from LibGui.RendererWin import RendererWin
 from core.writeCode import WriteCode
-
+from LibGui.r_controls import GroupBox
 '''
     自动写代码训练机 主界面
 '''
@@ -38,7 +38,7 @@ class AutoScript(QStackedWidget):
             div > 所有
         '''
         # 'div[@class="container main-centered"]'
-        self.render_labels = ['div[@class="container main-centered"]',"input","a","button","select"]
+        self.render_labels = ['sdf',"input","a","button","select"]
 
         # 写代码类
         self.w_code = WriteCode()
@@ -165,7 +165,6 @@ font: 9pt "等线";
 
     # 操作区域
     def operation(self):
-        print(self.operation_area)
         # url
         self.url_line = QLineEdit(self.page_op)
         self.url_line.setText("https://www.baidu.com/")
@@ -189,7 +188,7 @@ font: 9pt "等线";
         self.write_code_btn.clicked.connect(self.w_code_event)
 
         # 标签操作区域
-        self.box = QGroupBox(self.page_op)
+        self.box = GroupBox(self.page_op)
         self.box.setTitle("标签区")
         self.box.setFixedSize(600,150)
         self.box.setObjectName("box")
@@ -199,13 +198,17 @@ font: 9pt "等线";
         self.box_glay.setSpacing(0)
 
         # 默认所有标签都勾选
-        for l in self.render_labels:
-            cb = QCheckBox()
-            cb.setText(l)
-            cb.setCheckState(Qt.Checked)
+        for xpath,check in self.render.render_dict.items():
+            self.addXpath(xpath,check)
 
-            cb.stateChanged.connect(partial(self.render_state,cb))
-            self.box_glay.addWidget(cb)
+    # 添加xpath 到操作区域
+    def addXpath(self,xpath:str,isChecked=False):
+        xpath_box = QCheckBox()
+        xpath_box.setText(xpath)
+        if isChecked:
+            xpath_box.setCheckState(Qt.Checked)
+        xpath_box.stateChanged.connect(partial(self.render_state, xpath_box))
+        self.box_glay.addWidget(xpath_box)
 
     # 生成代码事件
     def w_code_event(self):
@@ -230,10 +233,13 @@ font: 9pt "等线";
                 pa.autoCreate(all_attr)
 
         # 渲染
-        for label in self.render_labels:
-            if self.render.render_dict["div" if "div" in label else label]: # 先判断控件是否需要渲染
-                label = "//"+label
-                self.browser.xpath(label,lambda x:call(x,self.render))
+        for _xpath,check in self.render.render_dict.items():
+            if self.render.render_dict.get("div" if "div" in _xpath else _xpath,None):# 先判断控件是否需要渲染
+                _xpath = "//"+_xpath
+                if check:
+                    self.browser.xpath(_xpath,lambda x:call(x,self.render))
+            else:
+                print("無效xpath:",_xpath)
 
     def url_event(self):
         self.init_size_rander = True # 可以渲染
@@ -245,7 +251,7 @@ font: 9pt "等线";
     # 下载html源码
     def down_html(self,html):
         self.url_submit.setText("访问完成")
-        self.render_view()
+        self.render_view()  # 首次渲染
 
     # 接收所有label即属性,进行分析,生成代码
     def toptip_event(self,labels:list):
