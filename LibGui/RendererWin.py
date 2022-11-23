@@ -176,6 +176,23 @@ border-width:2px;
         # print(self.desktopSize())
         # self.detectionControls(0,0,0,0)
 
+    # 添加标签
+    def addXpath(self,xpath_str,isChecked=False):
+        print(xpath_str)
+        print(self.render_dict)
+        if xpath_str not in self.render_dict:
+            self.render_dict[xpath_str] = isChecked
+            return True
+        return False
+
+    # 移除Xpath
+    def delXpath(self,xpath_str):
+        if xpath_str in self.render_dict:
+            del self.render_dict[xpath_str]
+            return True
+        return False
+
+
     # 通过属性来验证控件的可视类型
     def getVerifyControlType(self,rect:dict):
         final_type = None

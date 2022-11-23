@@ -17,7 +17,8 @@ from PyQt5.QtWidgets import (
     QTextBrowser,
     QGroupBox,
     QGridLayout,
-    QCheckBox
+    QCheckBox,
+    QInputDialog
 )
 from bs4 import BeautifulSoup
 from LibGui.loadBrowser import Browser
@@ -37,8 +38,6 @@ class AutoScript(QStackedWidget):
             渲染顺序
             div > 所有
         '''
-        # 'div[@class="container main-centered"]'
-        self.render_labels = ['sdf',"input","a","button","select"]
 
         # 写代码类
         self.w_code = WriteCode()
@@ -169,7 +168,7 @@ font: 9pt "等线";
         self.url_line = QLineEdit(self.page_op)
         self.url_line.setText("https://www.baidu.com/")
         self.url_line.setObjectName("url_line")
-        self.url_line.setPlaceholderText("Url")
+        self.url_line.setPlaceholderText("输入Url")
         self.url_line.setGeometry(10,10,250,30)
         self.url_submit = QPushButton("访问",self.page_op)
         self.url_submit.setObjectName("url_submit")
@@ -199,16 +198,25 @@ font: 9pt "等线";
 
         # 默认所有标签都勾选
         for xpath,check in self.render.render_dict.items():
-            self.addXpath(xpath,check)
+            self.addXpathCheckBox(xpath,check)
 
     # 添加xpath 到操作区域
-    def addXpath(self,xpath:str,isChecked=False):
+    def addXpathCheckBox(self,xpath:str,isChecked=False):
         xpath_box = QCheckBox()
         xpath_box.setText(xpath)
         if isChecked:
             xpath_box.setCheckState(Qt.Checked)
         xpath_box.stateChanged.connect(partial(self.render_state, xpath_box))
         self.box_glay.addWidget(xpath_box)
+
+    # 从操作区移除xpath
+    def delXpathCheckBox(self,xpath:str):
+        for check in [self.box_glay.itemAt(i) for i in range(self.box_glay.count())]:
+            w_check = check.widget()
+            if isinstance(w_check,QCheckBox) and w_check.text() == xpath:
+                w_check.stateChanged.disconnect()  # 断开信号连接
+                self.box_glay.removeItem(check)  # 移除布局
+                w_check.deleteLater()  # 删除对象
 
     # 生成代码事件
     def w_code_event(self):
@@ -261,11 +269,35 @@ font: 9pt "等线";
             if code:
                 self.writeCode(code)
 
+    # 操作区右键信号事件
+    def operation_right(self,model:str):
+
+        if model == self.box.ADD:
+            xpath,ok=QInputDialog.getText(None,"添加","输入xpath",QLineEdit.Normal,"")
+            if ok and xpath:
+                if xpath[:2] == "//":
+                    xpath = xpath[2:]
+                if self.render.addXpath(xpath):
+                    self.addXpathCheckBox(xpath)
+
+        if model == self.box.DEL:
+            xpath, ok = QInputDialog.getText(None, "删除", "输入xpath", QLineEdit.Normal, "")
+            if ok and xpath:
+                if xpath[:2] == "//":
+                    xpath = xpath[2:]
+                if self.render.delXpath(xpath):
+                    self.delXpathCheckBox(xpath)
+                    # 移除完成之后,重新渲染一次
+                    self.render_view()
+
     def myEvent(self):
         self.url_submit.clicked.connect(self.url_event)
         self.browser.contented.connect(self.down_html)
 
         self.render.sendToptiped.connect(self.toptip_event)
+
+        # 操作区右键信号
+        self.box.rightkeyed.connect(self.operation_right)
 
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
         if self.init_size_rander:

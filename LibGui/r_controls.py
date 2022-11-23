@@ -5,7 +5,7 @@
 # @software:PyCharm
 
 import sys
-from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtCore import Qt,QPoint,pyqtSignal
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox,QGroupBox
 from core.controlsType import ControlsType as Ct
@@ -59,6 +59,10 @@ class LineEdit(QLineEdit,LabelWidget):
 
 # -------------------------------------
 class GroupBox(QGroupBox,RQWidgetABC):
+    rightkeyed = pyqtSignal(str)
+    ADD = "add"
+    DEL = "del"
+
     def __init__(self,*args,**kwargs):
         super(GroupBox, self).__init__(*args,**kwargs)
 
@@ -69,6 +73,8 @@ class GroupBox(QGroupBox,RQWidgetABC):
         add_xpath = menu.addAction("添加xpath")
         del_xapth = menu.addAction("移除xpath")
 
+        add_xpath.triggered.connect(lambda :self.rightkeyed.emit(self.ADD))
+        del_xapth.triggered.connect(lambda :self.rightkeyed.emit(self.DEL))
         # 显示菜单
         menu.exec_(QCursor.pos())
 
