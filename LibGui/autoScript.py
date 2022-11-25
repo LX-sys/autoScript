@@ -29,25 +29,14 @@ from LibGui.r_controls import GroupBox
     自动写代码训练机 主界面
 '''
 
-class AutoScript(QStackedWidget):
+
+
+class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
 
-        # 待渲染的标题
-        '''
-            渲染顺序
-            div > 所有
-        '''
         self.setWindowTitle("ACode")
-        # 写代码类
-        self.w_code = WriteCode()
-
-        # 初始化 绘制窗口的时候,会调用渲染函数,需要阻止
-        self.init_size_rander = False
-
-        self.browser = Browser()
         self.setupUi()
-        self.myEvent()
 
     def setupUi(self):
         self.setObjectName("st_win")
@@ -100,7 +89,7 @@ font: 9pt "等线";
         self.page = QtWidgets.QWidget()
         self.page.setObjectName("page")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.page)
-        self.horizontalLayout.setContentsMargins(0,0,0,0)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.widget = QtWidgets.QWidget(self.page)
@@ -139,28 +128,12 @@ font: 9pt "等线";
         self.horizontalLayout.addWidget(self.code_win)
         self.addWidget(self.page)
 
-        self.retranslateUi()
         self.area_draw.setCurrentIndex(0)
-        self.addWidget(self.browser)
         self.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
 
         # ---
-        self.code_area()
-        self.draw()
         self.operation()
-
-    def writeCode(self,code:str):
-        self.code_win.append(code)
-        # self.code_win.setText(code)  # 这个函数在mac运行没事,在win大概率会卡死
-
-    # 代码区域
-    def code_area(self):
-        print(self.code_win)
-
-    # 绘图区域
-    def draw(self):
-        print(self.area_draw)
 
     # 操作区域
     def operation(self):
@@ -178,13 +151,11 @@ font: 9pt "等线";
         self.render_btn = QPushButton("重新渲染",self.page_op)
         self.render_btn.setObjectName("render_btn")
         self.render_btn.setGeometry(375,10,90,30)
-        self.render_btn.clicked.connect(lambda :self.render.render_view(self.browser))
 
         # 生成自动化代码
         self.write_code_btn =QPushButton("生成代码",self.page_op)
         self.write_code_btn.setObjectName("write_code_btn")
         self.write_code_btn.setGeometry(490,10,90,30)
-        self.write_code_btn.clicked.connect(self.w_code_event)
 
         # 标签操作区域
         self.box = GroupBox(self.page_op)
@@ -196,27 +167,43 @@ font: 9pt "等线";
         self.box_glay.setContentsMargins(1,1,1,1)
         self.box_glay.setSpacing(0)
 
+        # # 默认所有标签都勾选
+        # for xpath,check in self.render.render_dict.items():
+        #     self.box.addXpathCheckBox(self.box_glay,xpath,check,self.render_state)
+
+
+class AutoScript(AutoScriptUI):
+    def __init__(self, *args,**kwargs) -> None:
+        super().__init__(*args,**kwargs)
+
+        # 初始化 绘制窗口的时候,会调用渲染函数,需要阻止
+        self.init_size_rander = False
+
+        # 写代码类
+        self.w_code = WriteCode()
+        self.browser = Browser()
+
+        self.addWidget(self.browser)
+        self.myEvent()
+
+        self.Init()
+
+    def Init(self):
         # 默认所有标签都勾选
-        for xpath,check in self.render.render_dict.items():
-            self.addXpathCheckBox(xpath,check)
+        for xpath, check in self.render.render_dict.items():
+            self.box.addXpathCheckBox(self.box_glay, xpath, check, self.render_state)
 
-    # 添加xpath 到操作区域
-    def addXpathCheckBox(self,xpath:str,isChecked=False):
-        xpath_box = QCheckBox()
-        xpath_box.setText(xpath)
-        if isChecked:
-            xpath_box.setCheckState(Qt.Checked)
-        xpath_box.stateChanged.connect(partial(self.render_state, xpath_box))
-        self.box_glay.addWidget(xpath_box)
+    def writeCode(self,code:str):
+        self.code_win.append(code)
+        # self.code_win.setText(code)  # 这个函数在mac运行没事,在win大概率会卡死
 
-    # 从操作区移除xpath
-    def delXpathCheckBox(self,xpath:str):
-        for check in [self.box_glay.itemAt(i) for i in range(self.box_glay.count())]:
-            w_check = check.widget()
-            if isinstance(w_check,QCheckBox) and w_check.text() == xpath:
-                w_check.stateChanged.disconnect()  # 断开信号连接
-                self.box_glay.removeItem(check)  # 移除布局
-                w_check.deleteLater()  # 删除对象
+    # 代码区域
+    def code_area(self):
+        print(self.code_win)
+
+    # 绘图区域
+    def draw(self):
+        print(self.area_draw)
 
     # 生成代码事件
     def w_code_event(self):
@@ -228,7 +215,6 @@ font: 9pt "等线";
         self.render.setControlRender(label_name,True if obj.checkState() > 0 else False)
         if self.init_size_rander: # 初始不渲染
             self.render.render_view(self.browser)
-
 
     def url_event(self):
         self.init_size_rander = True # 可以渲染
@@ -258,21 +244,29 @@ font: 9pt "等线";
                 if xpath[:2] == "//":
                     xpath = xpath[2:]
                 if self.render.addXpath(xpath):
-                    self.addXpathCheckBox(xpath)
+                    self.box.addXpathCheckBox(self.box_glay,xpath,False,self.render_state)
 
         if model == self.box.DEL:
             xpath, ok = QInputDialog.getText(None, "删除", "输入xpath", QLineEdit.Normal, "")
+            print(xpath,ok)
             if ok and xpath:
                 if xpath[:2] == "//":
                     xpath = xpath[2:]
                 if self.render.delXpath(xpath):
-                    self.delXpathCheckBox(xpath)
+                    self.box.delXpathCheckBox(self.box_glay,xpath)
                     # 移除完成之后,重新渲染一次
                     self.render.render_view(self.browser)
 
     def myEvent(self):
+        # 生成代码事件
+        self.write_code_btn.clicked.connect(self.w_code_event)
+
+        # 重绘窗口
+        self.render_btn.clicked.connect(lambda: self.render.render_view(self.browser))
+
+        # 访问url
         self.url_submit.clicked.connect(self.url_event)
-        self.browser.contented.connect(self.down_html)
+        self.browser.contented.connect(self.down_html) # 浏览器加载完成事件
 
         self.render.sendToptiped.connect(self.toptip_event)
 
@@ -283,9 +277,6 @@ font: 9pt "等线";
         if self.init_size_rander:
             self.render.render_view(self.browser)
         super(AutoScript, self).resizeEvent(e)
-
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate
 
 
 if __name__ == '__main__':

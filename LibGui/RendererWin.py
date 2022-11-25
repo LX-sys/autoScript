@@ -189,8 +189,6 @@ border-width:2px;
 
     # 添加标签
     def addXpath(self,xpath_str,isChecked=False):
-        print(xpath_str)
-        print(self.render_dict)
         if xpath_str not in self.render_dict:
             self.render_dict[xpath_str] = isChecked
             return True
@@ -198,6 +196,8 @@ border-width:2px;
 
     # 移除Xpath
     def delXpath(self,xpath_str):
+        # print(xpath_str)
+        # print(self.render_dict)
         if xpath_str in self.render_dict:
             del self.render_dict[xpath_str]
             return True
@@ -280,7 +280,6 @@ border-width:2px;
     def delAllControl(self):
         for c in self.__control():
             delete(c)
-        # print("销毁所有控件完成")
 
     # 隐藏控件
     def hideControl(self,name):
@@ -297,7 +296,6 @@ border-width:2px;
                 比如: 
                     标签是input,但是真实情况是要当按钮来操作,那么这里就能获取到按钮
             '''
-            print(c.objectName())
             temp_list.append(c.toolTip())
 
         # 发送 toptip
@@ -320,7 +318,6 @@ border-width:2px;
 
         w_minification = round(page_area_w / browser_w, 2)
         h_minification = round(page_area_h / browser_h, 2)
-        # print(w_minification,h_minification)
         return {"w": int(rect["w"] * w_minification),
                 "h": int(rect["h"] * h_minification),
                 "x": int(rect["x"] * w_minification),

@@ -5,9 +5,11 @@
 # @software:PyCharm
 
 import sys
+from functools import partial
+from PyQt5.sip import delete
 from PyQt5.QtCore import Qt,QPoint,pyqtSignal
 from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox,QGroupBox
+from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox,QGroupBox,QCheckBox
 from core.controlsAttr import ControlsType as Ct
 
 # 让所有渲染的控件都具有右键功能的基类
@@ -65,6 +67,63 @@ class GroupBox(QGroupBox,RQWidgetABC):
 
     def __init__(self,*args,**kwargs):
         super(GroupBox, self).__init__(*args,**kwargs)
+        self.resize(100,100)
+        self.row_max = 5  # 一行最多 5个
+        self.row,self.col = 0,-1
+
+    # 位置
+    def getNextPos(self)->tuple:
+        self.col+=1
+        if self.col < self.row_max:
+            print(self.row,self.col)
+            return self.row,self.col
+        else:
+            print("==")
+            self.row+=1
+            self.col = 0
+            return self.row, self.col
+
+    # 添加xpath 到操作区域
+    def addXpathCheckBox(self,box_glay,xpath:str,isChecked=False,call=None):
+        '''
+        :param box_glay:布局容器
+        :param xpath:
+        :param isChecked:
+        :param call: 回调函数
+        :return:
+        '''
+        xpath_box = QCheckBox()
+        xpath_box.setText(xpath)
+        if isChecked:
+            xpath_box.setCheckState(Qt.Checked)
+        xpath_box.stateChanged.connect(partial(call, xpath_box))
+        box_glay.addWidget(xpath_box,*self.getNextPos())
+
+    # 从操作区移除xpath
+    def delXpathCheckBox(self,box_glay,xpath:str):
+        '''
+
+        :param box_glay: 布局容器
+        :param xpath:
+        :return:
+        '''
+        flag = False
+        for check in [box_glay.itemAt(i) for i in range(box_glay.count())]:
+            w_check = check.widget()
+            if isinstance(w_check,QCheckBox) and w_check.text() == xpath:
+                w_check.stateChanged.disconnect()  # 断开信号连接
+                box_glay.removeItem(check)  # 移除布局
+                delete(w_check) # 删除对象
+                flag = True
+            elif flag:
+                print(w_check,w_check.text())
+                # w_check.deleteLater()
+        # if self.col >-1:
+        #     self.col-=1  # 位置-1
+        #     if self.col == -1:
+        #         self.row-=1
+        #         self.col = 4
+
 
     def menu_Event(self,pos:QPoint):
         # 创建菜单
