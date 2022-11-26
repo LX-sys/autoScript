@@ -4,13 +4,9 @@
 
 import os
 import sys
-import time
-
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QUrl,pyqtSignal
-from PyQt5.QtWebEngineWidgets import QWebEngineView,QWebEngineProfile
-
-
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 class Browser(QWebEngineView):
     contented = pyqtSignal(str)  # 发送网页源码的信号
@@ -18,12 +14,10 @@ class Browser(QWebEngineView):
     def __init__(self,*args,**kwargs):
         super(Browser, self).__init__(*args,**kwargs)
 
-        # self.resize(800,600)
-        # self.showFullScreen()   # 这个方法只有纸win才有效
         self.resize(*self.desktopSize())
-        print(self.page().profile().httpUserAgent())
-        print(self.page().profile().httpCacheType())
-        print(self.page().profile().httpAcceptLanguage())
+        # print(self.page().profile().httpUserAgent())
+        # print(self.page().profile().httpCacheType())
+        # print(self.page().profile().httpAcceptLanguage())
 
         self.myEvent()
 
@@ -42,7 +36,6 @@ class Browser(QWebEngineView):
 
     def load_Finish_event(self,b:bool):
         def call(x):
-            # print(x)
             self.contented.emit(x) # 发送源码
 
         self.page().toHtml(call)

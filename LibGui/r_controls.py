@@ -4,14 +4,24 @@
 # @file:r_controls.py
 # @software:PyCharm
 
+import re
 import sys
 from functools import partial
 from PyQt5.sip import delete
 from PyQt5.QtCore import Qt,QPoint,pyqtSignal
 from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QApplication,QPushButton,QLineEdit,QWidget,QMenu,QComboBox,QGroupBox,QCheckBox
 from core.controlsAttr import ControlsType as Ct
-
+from commonHead.Qt.qtWidgets import (
+    QApplication,
+    QPushButton,
+    QLineEdit,
+    QWidget,
+    QMenu,
+    QGroupBox,
+    QCheckBox,
+    QGridLayout,
+    QComboBox
+)
 # 让所有渲染的控件都具有右键功能的基类
 class RQWidgetABC(QWidget):
     def __init__(self,*args,**kwargs):
@@ -59,6 +69,10 @@ class LineEdit(QLineEdit,LabelWidget):
         super(LineEdit, self).__init__(*args,**kwargs)
 
 
+class ComboBox(QComboBox,LabelWidget):
+    def __init__(self,*args,**kwargs):
+        super(ComboBox, self).__init__(*args,**kwargs)
+
 # -------------------------------------
 class GroupBox(QGroupBox,RQWidgetABC):
     rightkeyed = pyqtSignal(str)
@@ -71,59 +85,70 @@ class GroupBox(QGroupBox,RQWidgetABC):
         self.row_max = 5  # 一行最多 5个
         self.row,self.col = 0,-1
 
+        self.box_glay = QGridLayout(self) # 在操作区内部添加盒子布局
+        self.box_glay.setContentsMargins(1,1,1,1)
+        self.box_glay.setSpacing(0)
+
     # 位置
     def getNextPos(self)->tuple:
         self.col+=1
         if self.col < self.row_max:
-            print(self.row,self.col)
             return self.row,self.col
         else:
-            print("==")
             self.row+=1
             self.col = 0
             return self.row, self.col
 
     # 添加xpath 到操作区域
-    def addXpathCheckBox(self,box_glay,xpath:str,isChecked=False,call=None):
+    def addXpathCheckBox(self,xpath:str,isChecked=False,call=None):
         '''
-        :param box_glay:布局容器
         :param xpath:
         :param isChecked:
         :param call: 回调函数
         :return:
         '''
+        xpath = re.sub("^//","",xpath) #  显示的时候,不需要//
+
         xpath_box = QCheckBox()
         xpath_box.setText(xpath)
         if isChecked:
             xpath_box.setCheckState(Qt.Checked)
         xpath_box.stateChanged.connect(partial(call, xpath_box))
-        box_glay.addWidget(xpath_box,*self.getNextPos())
+        pos = self.getNextPos()
+        print(pos,xpath)
+        self.box_glay.addWidget(xpath_box,*pos)
+
+    # 整理布局
+    def arrangeLayout(self):
+        print(self.box_glay.count())
+        print([self.box_glay.itemAt(i) for i in range(self.box_glay.count())])
+        for i in range(self.box_glay.count()):
+            print(self.box_glay.getItemPosition(i))
+        print(self.row, self.col)
+
+        row = self.row*self.row_max
+        col = self.col
 
     # 从操作区移除xpath
-    def delXpathCheckBox(self,box_glay,xpath:str):
+    def delXpathCheckBox(self,xpath:str):
         '''
-
-        :param box_glay: 布局容器
         :param xpath:
         :return:
         '''
+        xpath = re.sub("^//", "", xpath)  # 删除的时候,也不需要//
         flag = False
-        for check in [box_glay.itemAt(i) for i in range(box_glay.count())]:
+        for i,check in enumerate([self.box_glay.itemAt(i) for i in range(self.box_glay.count())]):
             w_check = check.widget()
             if isinstance(w_check,QCheckBox) and w_check.text() == xpath:
+
                 w_check.stateChanged.disconnect()  # 断开信号连接
-                box_glay.removeItem(check)  # 移除布局
+                # self.box_glay.removeWidget(w_check) # 移除窗口
+                self.box_glay.removeItem(check)  # 移除item
                 delete(w_check) # 删除对象
                 flag = True
             elif flag:
-                print(w_check,w_check.text())
+                print(w_check,w_check.text(),self.box_glay.getItemPosition(i))
                 # w_check.deleteLater()
-        # if self.col >-1:
-        #     self.col-=1  # 位置-1
-        #     if self.col == -1:
-        #         self.row-=1
-        #         self.col = 4
-
 
     def menu_Event(self,pos:QPoint):
         # 创建菜单
