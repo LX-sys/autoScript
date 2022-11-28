@@ -91,13 +91,12 @@ class GroupBox(QGroupBox,RQWidgetABC):
 
     # 位置
     def getNextPos(self)->tuple:
-        self.col+=1
-        if self.col < self.row_max:
-            return self.row,self.col
+        if self.col < self.row_max-1:
+            self.col += 1
         else:
             self.row+=1
             self.col = 0
-            return self.row, self.col
+        return self.row, self.col
 
     # 添加xpath 到操作区域
     def addXpathCheckBox(self,xpath:str,isChecked=False,call=None):
@@ -136,19 +135,44 @@ class GroupBox(QGroupBox,RQWidgetABC):
         :return:
         '''
         xpath = re.sub("^//", "", xpath)  # 删除的时候,也不需要//
-        flag = False
-        for i,check in enumerate([self.box_glay.itemAt(i) for i in range(self.box_glay.count())]):
-            w_check = check.widget()
-            if isinstance(w_check,QCheckBox) and w_check.text() == xpath:
+        del_i = None
+        for i in range(self.box_glay.count()):
+            # print(i)
+            item = self.box_glay.itemAt(i)
+            if item is None:
+                continue
 
+            w_check = item.widget()
+
+            if isinstance(w_check, QCheckBox) and w_check.text() == xpath:
                 w_check.stateChanged.disconnect()  # 断开信号连接
-                # self.box_glay.removeWidget(w_check) # 移除窗口
-                self.box_glay.removeItem(check)  # 移除item
-                delete(w_check) # 删除对象
-                flag = True
-            elif flag:
-                print(w_check,w_check.text(),self.box_glay.getItemPosition(i))
-                # w_check.deleteLater()
+                self.box_glay.removeItem(item)  # 移除item
+                delete(w_check)  # 删除对象
+                del_i = i
+                break
+            # elif flag:
+            #     r,c,_,_ = self.box_glay.getItemPosition(i)
+            #     print(r,c)
+            #     self.box_glay.addWidget(w_check,r,c)
+                # print(w_check,w_check.text(),self.box_glay.getItemPosition(i))
+        for i in range(del_i+1,self.box_glay.count()):
+            print("ii",i)
+            item = self.box_glay.itemAt(i)
+            self.box_glay.addWidget(item.widget(),0,3)
+            self.update()
+            # print(i,self.box_glay.getItemPosition(i))
+
+        # if self.col > 0:
+        #     self.col-=1
+        # else:
+        #     self.row-=1
+        #     if self.row < 0:
+        #         self.row = 0
+        #     self.col = self.row_max-1
+
+        for i in range(self.box_glay.count()):
+            print("->",self.box_glay.getItemPosition(i),self.box_glay.itemAt(i).widget().text())
+
 
     def menu_Event(self,pos:QPoint):
         # 创建菜单

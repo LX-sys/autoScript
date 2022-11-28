@@ -14,5 +14,6 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QInputDialog,
     QComboBox,
-    QMenu
+    QMenu,
+    QTableWidget
 )
