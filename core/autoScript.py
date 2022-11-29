@@ -15,6 +15,7 @@ from LibGui.UI.autoScriptUI import AutoScriptUI
     自动写代码训练机 主界面
 '''
 
+
 class AutoScript(AutoScriptUI):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
@@ -26,7 +27,8 @@ class AutoScript(AutoScriptUI):
         self.w_code = WriteCode()
         self.browser = Browser()
 
-        self.addWidget(self.browser)
+        # self.addWidget(self.browser)
+        self.area_draw.addWidget(self.browser)
         self.myEvent()
 
         self.Init()
@@ -61,10 +63,8 @@ class AutoScript(AutoScriptUI):
 
     def url_event(self):
         self.init_size_rander = True # 可以渲染
-
         self.url_submit.setText("访问中")
         self.browser.get(self.url_line.text())
-        self.browser.show()
 
     # 下载html源码
     def down_html(self,html):
