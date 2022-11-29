@@ -8,6 +8,10 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QUrl,pyqtSignal
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+'''
+    浏览器
+'''
+
 class Browser(QWebEngineView):
     contented = pyqtSignal(str)  # 发送网页源码的信号
 
