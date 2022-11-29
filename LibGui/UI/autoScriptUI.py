@@ -1,6 +1,6 @@
 import sys
 from core.Render.RendererWin import RendererWin
-from LibGui.r_controls import GroupBox
+from LibGui.sorollWin import SorollWidget
 from commonHead.Qt.qtWidgets import (
     QApplication,
     QStackedWidget,
@@ -63,13 +63,15 @@ border-radius:4px;
 #render_btn:hover,#url_submit:hover,#write_code_btn:hover{
 border-width:2px;
 }
-#box{
+/*#box{
 border:1px solid rgb(0, 170, 255);
 }
 #box #QCheckBox{
 font: 9pt "等线";
+}*/
+#area{
+border:none;
 }
-
         ''')
         self.page = QWidget()
         self.page.setObjectName("page")
@@ -142,7 +144,7 @@ font: 9pt "等线";
         self.write_code_btn.setGeometry(490,10,90,30)
 
         # 标签操作区域
-        self.box = GroupBox(self.page_op)
+        self.box = SorollWidget(self.page_op)
         self.box.setTitle("标签区")
         self.box.setFixedSize(600,150)
         self.box.setObjectName("box")
