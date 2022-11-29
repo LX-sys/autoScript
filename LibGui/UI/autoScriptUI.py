@@ -1,5 +1,5 @@
 import sys
-from LibGui.Render.RendererWin import RendererWin
+from core.Render.RendererWin import RendererWin
 from LibGui.r_controls import GroupBox
 from commonHead.Qt.qtWidgets import (
     QApplication,

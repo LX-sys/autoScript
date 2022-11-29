@@ -1,7 +1,7 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication
-from LibGui.autoScript import AutoScript
+from core.autoScript import AutoScript
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

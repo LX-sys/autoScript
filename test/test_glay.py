@@ -35,9 +35,7 @@ class TestGird(QWidget):
 
         for i in range(self.lay.count()):
             print("->",self.lay.getItemPosition(i))
-        # for i in range(10):
-        #     self.addBtn("btn{}".format(i))
-        # print("========>")
+
 
     def nextPos(self):
         if self.col < self.col_max-1:

@@ -73,6 +73,7 @@ class ComboBox(QComboBox,LabelWidget):
     def __init__(self,*args,**kwargs):
         super(ComboBox, self).__init__(*args,**kwargs)
 
+
 # -------------------------------------
 class GroupBox(QGroupBox,RQWidgetABC):
     rightkeyed = pyqtSignal(str)
@@ -159,7 +160,6 @@ class GroupBox(QGroupBox,RQWidgetABC):
             print("ii",i)
             item = self.box_glay.itemAt(i)
             self.box_glay.addWidget(item.widget(),0,3)
-            self.update()
             # print(i,self.box_glay.getItemPosition(i))
 
         # if self.col > 0:

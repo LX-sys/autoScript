@@ -257,6 +257,10 @@ border-width:2px;
 
     # 渲染视图
     def render_view(self,browser,is_del=True):
+
+        if not browser.url().toString():
+            return
+
         if is_del:
             self.delAllControl()
 
@@ -267,7 +271,6 @@ border-width:2px;
             for all_attr in x:
                 all_attr["rect"] = self.scale(browser.size(),all_attr["rect"]) # 缩放,修改参数
                 self.autoCreate(all_attr)
-
         # 渲染
         for _xpath,check in self.render_dict.items():
             if self.render_dict.get("div" if "div" in _xpath else _xpath,None):# 先判断控件是否需要渲染
