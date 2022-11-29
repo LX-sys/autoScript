@@ -12,11 +12,12 @@ from commonHead import (
     QVBoxLayout,
     QSize
 )
-
+from LibGui.loadBrowser import Browser
 class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
 
+        self.browser = Browser()
         self.setWindowTitle("ACode")
         self.setupUi()
 
@@ -88,9 +89,7 @@ border:none;
         self.render = RendererWin()
         self.render.setObjectName("render")
         self.area_draw.addWidget(self.render)
-        # self.browser_view = QWidget()
-        # self.browser_view.setObjectName("browser_view")
-        # self.area_draw.addWidget(self.browser_view)
+        self.area_draw.addWidget(self.browser)
         # self.browser_view_vlay = QVBoxLayout(self.browser_view)
         # self.browser_view.setContentsMargins(0,0,0,0)
         # self.browser_view_vlay.setSpacing(0)
@@ -151,7 +150,7 @@ border:none;
         self.box.setObjectName("box")
         self.box.move(10,45)
 
-from PyQt5.QtCore import QCoreApplication
+
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)

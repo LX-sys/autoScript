@@ -25,10 +25,10 @@ class AutoScript(AutoScriptUI):
 
         # 写代码类
         self.w_code = WriteCode()
-        self.browser = Browser()
-
+        # self.browser = Browser()
+        # self.setObjectName("browser")
         # self.addWidget(self.browser)
-        self.area_draw.addWidget(self.browser)
+        # self.area_draw.addWidget(self.browser)
         self.myEvent()
 
         self.Init()
