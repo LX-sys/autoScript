@@ -257,7 +257,6 @@ border-width:2px;
 
     # 渲染视图
     def render_view(self,browser,is_del=True):
-
         if not browser.url().toString():
             return
 
