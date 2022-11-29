@@ -15,5 +15,6 @@ from PyQt5.QtWidgets import (
     QInputDialog,
     QComboBox,
     QMenu,
-    QTableWidget
+    QTableWidget,
+    QScrollArea,
 )

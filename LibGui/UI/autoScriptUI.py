@@ -1,7 +1,7 @@
 import sys
 from core.Render.RendererWin import RendererWin
 from LibGui.sorollWin import SorollWidget
-from commonHead.Qt.qtWidgets import (
+from commonHead import (
     QApplication,
     QStackedWidget,
     QPushButton,
@@ -9,12 +9,9 @@ from commonHead.Qt.qtWidgets import (
     QTextBrowser,
     QWidget,
     QHBoxLayout,
-    QVBoxLayout
-)
-from commonHead.Qt.qtCore import (
+    QVBoxLayout,
     QSize
 )
-
 
 class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
@@ -150,8 +147,9 @@ border:none;
         self.box.setObjectName("box")
         self.box.move(10,45)
 
-
+from PyQt5.QtCore import QCoreApplication
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
 
     win = AutoScriptUI()

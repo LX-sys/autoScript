@@ -3,12 +3,12 @@
 
 
 import sys
-from PyQt5.QtGui import QResizeEvent
-from commonHead.Qt.qtWidgets import (
+from commonHead import (
     QApplication,
     QLineEdit,
     QCheckBox,
-    QInputDialog
+    QInputDialog,
+    QResizeEvent,
 )
 from LibGui.loadBrowser import Browser
 from core.writeCode import WriteCode
@@ -71,6 +71,7 @@ class AutoScript(AutoScriptUI):
 
     # 下载html源码
     def down_html(self,html):
+        # print(html)
         self.url_submit.setText("访问完成")
         self.render.render_view(self.browser)  # 首次渲染
 

@@ -6,12 +6,8 @@
 
 import re
 import sys
-from functools import partial
-from PyQt5.sip import delete
-from PyQt5.QtCore import Qt,QPoint,pyqtSignal
-from PyQt5.QtGui import QCursor
 from core.controlsAttr import ControlsType as Ct
-from commonHead.Qt.qtWidgets import (
+from commonHead import (
     QApplication,
     QPushButton,
     QLineEdit,
@@ -20,7 +16,11 @@ from commonHead.Qt.qtWidgets import (
     QGroupBox,
     QCheckBox,
     QGridLayout,
-    QComboBox
+    QComboBox,
+    QCursor,
+    Qt,
+    QPoint,
+    pyqtSignal
 )
 # 让所有渲染的控件都具有右键功能的基类
 class RQWidgetABC(QWidget):

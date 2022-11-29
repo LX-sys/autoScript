@@ -8,9 +8,7 @@ import re
 import sys
 from functools import partial
 from PyQt5.sip import delete
-from commonHead.Qt.qtCore import pyqtSignal,QPoint,Qt
-from PyQt5.QtGui import QCursor
-from commonHead.Qt.qtWidgets import (
+from commonHead import (
     QApplication,
     QScrollArea,
     QVBoxLayout,
@@ -19,10 +17,15 @@ from commonHead.Qt.qtWidgets import (
     QPushButton,
     QWidget,
     QMenu,
-    QCheckBox
+    QCheckBox,
+    pyqtSignal,
+    QPoint,
+    Qt,
+    QCursor
 )
+
 from LibGui.r_controls import RQWidgetABC
-from LibGui.r_controls import GroupBox
+# from LibGui.r_controls import GroupBox
 
 '''
     QGroupBox,QScrollArea 组合控件

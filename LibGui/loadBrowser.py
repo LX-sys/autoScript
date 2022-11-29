@@ -4,9 +4,12 @@
 
 import os
 import sys
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QUrl,pyqtSignal
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from commonHead import (
+    QApplication,
+    QUrl,
+    pyqtSignal
+)
 
 '''
     浏览器
@@ -112,7 +115,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     win = Browser()
-    win.get("https://www.baidu.com/")
+    # win.get("https://www.baidu.com/")
+    win.get("https://aep-pdp-control.sites.cigna.com/?utm_campaign=0265712&utm_source=search&campaign_ID=0265712&utm_medium=search&sid=0265712&PID=ps_23_19444&customtrack1=0265712&&msclkid=9b1315319682176908f676b453b1178d&gclid=9b1315319682176908f676b453b1178d&gclsrc=3p.ds")
     win.show()
 
     sys.exit(app.exec_())

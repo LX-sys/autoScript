@@ -4,4 +4,5 @@ from PyQt5.QtCore import (
     pyqtSignal,
     QSize,
     QPoint,
+    QUrl
 )
