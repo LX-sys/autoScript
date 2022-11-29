@@ -1,14 +1,10 @@
-
-
-
-
-import os
-import sys
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from commonHead import (
+    os,
+    sys,
     QApplication,
     QUrl,
-    pyqtSignal
+    pyqtSignal,
 )
 
 '''

@@ -3,12 +3,11 @@
 # @author:LX
 # @file:sorollWin.py
 # @software:PyCharm
-
-import re
-import sys
-from functools import partial
 from PyQt5.sip import delete
 from commonHead import (
+    re,
+    sys,
+    partial,
     QApplication,
     QScrollArea,
     QVBoxLayout,

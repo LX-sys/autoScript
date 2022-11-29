@@ -1,7 +1,7 @@
-import sys
 from core.Render.RendererWin import RendererWin
 from LibGui.sorollWin import SorollWidget
 from commonHead import (
+    sys,
     QApplication,
     QStackedWidget,
     QPushButton,

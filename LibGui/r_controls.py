@@ -3,11 +3,10 @@
 # @author:LX
 # @file:r_controls.py
 # @software:PyCharm
-
-import re
-import sys
 from core.controlsAttr import ControlsType as Ct
 from commonHead import (
+    re,
+    sys,
     QApplication,
     QPushButton,
     QLineEdit,

@@ -1,6 +1,4 @@
-
-import sys
-from PyQt5.QtWidgets import QApplication
+from commonHead import sys,QApplication
 from core.autoScript import AutoScript
 
 if __name__ == '__main__':

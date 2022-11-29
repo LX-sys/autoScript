@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-
-
-
-import sys
 from commonHead import (
+    sys,
     QApplication,
     QLineEdit,
     QCheckBox,
