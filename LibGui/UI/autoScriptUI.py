@@ -82,15 +82,19 @@ border:none;
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
+        # # 渲染视图
         self.area_draw = QStackedWidget(self.widget)
         self.area_draw.setObjectName("area_draw")
-
         self.render = RendererWin()
         self.render.setObjectName("render")
         self.area_draw.addWidget(self.render)
-        self.page_3 = QWidget()
-        self.page_3.setObjectName("page_3")
-        self.area_draw.addWidget(self.page_3)
+        # self.browser_view = QWidget()
+        # self.browser_view.setObjectName("browser_view")
+        # self.area_draw.addWidget(self.browser_view)
+        # self.browser_view_vlay = QVBoxLayout(self.browser_view)
+        # self.browser_view.setContentsMargins(0,0,0,0)
+        # self.browser_view_vlay.setSpacing(0)
+        # -========================-
         self.verticalLayout.addWidget(self.area_draw)
         self.operation_area = QStackedWidget(self.widget)
         self.operation_area.setMinimumSize(QSize(0, 211))
