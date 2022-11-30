@@ -1,5 +1,6 @@
 from core.Render.RendererWin import RendererWin
 from LibGui.sorollWin import SorollWidget
+from LibGui.EyeButton import Eye
 from commonHead import (
     sys,
     QApplication,
@@ -12,6 +13,8 @@ from commonHead import (
     QVBoxLayout,
     QSize
 )
+
+
 from LibGui.loadBrowser import Browser
 class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
@@ -139,6 +142,11 @@ border:none;
         self.write_code_btn =QPushButton("生成代码",self.page_op)
         self.write_code_btn.setObjectName("write_code_btn")
         self.write_code_btn.setGeometry(490,10,90,30)
+
+        # 眼睛
+        self.eye_btn = Eye("眼睛",self.page_op)
+        self.eye_btn.setObjectName("eye_btn")
+        self.eye_btn.setGeometry(600,10,50,30)
 
         # 标签操作区域
         self.box = SorollWidget(self.page_op)

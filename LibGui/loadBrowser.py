@@ -17,8 +17,8 @@ class Browser(QWebEngineView):
     def __init__(self,*args,**kwargs):
         super(Browser, self).__init__(*args,**kwargs)
 
-        # self.resize(*self.desktopSize())
-        self.setZoomFactor(0.5)
+        self.resize(*self.desktopSize())
+        self.setZoomFactor(1)
         # print(self.page().profile().httpUserAgent())
         # print(self.page().profile().httpCacheType())
         # print(self.page().profile().httpAcceptLanguage())

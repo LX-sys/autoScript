@@ -23,12 +23,11 @@ class AutoScript(AutoScriptUI):
         # 初始化 绘制窗口的时候,会调用渲染函数,需要阻止
         self.init_size_rander = False
 
+        # 眼睛标记
+        self.EyeFlag = True
+
         # 写代码类
         self.w_code = WriteCode()
-        # self.browser = Browser()
-        # self.setObjectName("browser")
-        # self.addWidget(self.browser)
-        # self.area_draw.addWidget(self.browser)
         self.myEvent()
 
         self.Init()
@@ -82,7 +81,6 @@ class AutoScript(AutoScriptUI):
 
     # 操作区右键信号事件
     def operation_right(self,model:str):
-
         xpath, ok = QInputDialog.getText(None, "添加/删除", "输入xpath", QLineEdit.Normal, "")
 
         if ok and xpath:
@@ -95,6 +93,10 @@ class AutoScript(AutoScriptUI):
                     self.box.delXpathCheckBox(xpath)
                     # 移除完成之后,重新渲染一次
                     self.render.render_view(self.browser)
+
+    # 眼睛切换视图
+    def eye_event(self,b):
+        self.area_draw.setCurrentIndex(1 if b else 0)
 
     def myEvent(self):
         # 生成代码事件
@@ -111,6 +113,9 @@ class AutoScript(AutoScriptUI):
 
         # 操作区右键信号
         self.box.rightkeyed.connect(self.operation_right)
+
+        # 眼睛事件
+        self.eye_btn.springback.connect(self.eye_event)
 
     def resizeEvent(self, e: QResizeEvent) -> None:
         if self.init_size_rander:

@@ -8,5 +8,6 @@
 from PyQt5.QtGui import (
     QCursor,
     QPainter,
-    QResizeEvent
+    QResizeEvent,
+    QMouseEvent
 )
