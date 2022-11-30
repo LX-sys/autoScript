@@ -33,9 +33,7 @@ color:#fff;
 border-left:2px solid #455A64;
 background-color: #212121;
 }
-#render{
-background-color:transparent;
-}
+
 #operation_area{
 border-top:2px solid #009688;
 background-color:transparent;
@@ -87,14 +85,13 @@ border:none;
         self.area_draw = QStackedWidget(self.widget)
         self.area_draw.setObjectName("area_draw")
         self.render = RendererWin()
-        self.render.setObjectName("render")
         self.area_draw.addWidget(self.render)
         self.area_draw.addWidget(self.browser)
-        # self.browser_view_vlay = QVBoxLayout(self.browser_view)
-        # self.browser_view.setContentsMargins(0,0,0,0)
-        # self.browser_view_vlay.setSpacing(0)
-        # -========================-
+        # self.browser.get("https://www.baidu.com/")
+        # self.browser.show()
         self.verticalLayout.addWidget(self.area_draw)
+        # -========================-
+
         self.operation_area = QStackedWidget(self.widget)
         self.operation_area.setMinimumSize(QSize(0, 211))
         self.operation_area.setMaximumSize(QSize(16777215, 211))

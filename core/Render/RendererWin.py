@@ -11,14 +11,18 @@ from PyQt5.QtCore import QSize,pyqtSignal,QPoint,Qt
 from PyQt5.QtGui import QMouseEvent,QPainter,QColor,QPaintEvent,QPen
 from commonHead.Qt.qtWidgets import (
     QApplication,
-    QWidget
+    QWidget,
+    QFrame
 )
 from .controlFactory import ControlFactory
 from .controlsAttrSys import ControlsAttrSys
 
 
 # 绘制区域(渲染)
-class RendererWin(QWidget):
+'''
+    这里需要继承QFrame,QWidget会导致浏览器在QStackedWidget会透视
+'''
+class RendererWin(QFrame):
     sendToptiped = pyqtSignal(list)  # 发送view上所有显示的标记即属性
     # 被框选中后的颜色
     Select_Color = "background-color: qlineargradient(spread:pad, x1: 0, y1: 0, x2: 1, y2: 1, stop: 0.585227 rgba(98, 192, 255, 80));"
