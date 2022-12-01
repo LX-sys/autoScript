@@ -1,35 +1,29 @@
 # -*- coding:utf-8 -*-
-# @time:2022/11/2915:58
+# @time:2022/11/3016:28
 # @author:LX
-# @file:test.py
+# @file:test_brower.py
 # @software:PyCharm
-import logging
-import colorlog
 
-def init_log():
-    logger = logging.getLogger('ROOT')
-    logger.setLevel(logging.DEBUG)
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.DEBUG)
-    fmt_string = '%(log_color)s[%(name)s][%(levelname)s]%(message)s'
-    # black red green yellow blue purple cyan 和 white
-    log_colors = {
-        'DEBUG': 'white',
-        'INFO': 'green',
-        'WARNING': 'yellow',
-        'ERROR': 'red',
-        'CRITICAL': 'purple'
-        }
-    fmt = colorlog.ColoredFormatter(fmt_string, log_colors=log_colors)
-    stream_handler.setFormatter(fmt)
-    logger.addHandler(stream_handler)
-    return logger
 
+import sys
+from PyQt5.QtWidgets import QWidget,QApplication
+from PyQt5.QtGui import QMouseEvent
+
+class TestSt(QWidget):
+    def __init__(self):
+        super(TestSt, self).__init__()
+        self.resize(800,600)
+
+
+    def mousePressEvent(self, e: QMouseEvent) -> None:
+        # 这里自己判断鼠标的按键
+        self.close()
+        super(TestSt, self).mousePressEvent(e)
 
 if __name__ == '__main__':
-    log = init_log()
-    log.debug('debug message')
-    log.info('info message')
-    log.warning('warning message')
-    log.error('error message')
-    log.critical('critical message')
+    app = QApplication(sys.argv)
+
+    win = TestSt()
+    win.show()
+
+    sys.exit(app.exec_())
