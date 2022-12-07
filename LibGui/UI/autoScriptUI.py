@@ -11,7 +11,7 @@ from commonHead import (
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
-    QSize
+    QSize,
 )
 
 

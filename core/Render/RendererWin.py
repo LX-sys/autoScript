@@ -29,7 +29,6 @@ class RendererWin(QFrame):
 
     def  __init__(self,*args,**kwargs):
         super(RendererWin, self).__init__(*args,**kwargs)
-
         # 控件渲染字典
         '''
             这个字典决定  该控件是否被渲染出来
