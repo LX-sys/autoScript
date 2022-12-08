@@ -37,7 +37,14 @@ class SorollWidget(QGroupBox,RQWidgetABC):
 
     def __init__(self,*args,**kwargs):
        super(SorollWidget, self).__init__(*args,**kwargs)
+
        self.resize(800,600)
+       self.setObjectName("sorollw")
+       self.setStyleSheet('''
+#area{
+border:none;
+}
+       ''')
 
        self.row_max = 5  # 一行最多 5个
        self.row, self.col = 0, -1
@@ -47,6 +54,7 @@ class SorollWidget(QGroupBox,RQWidgetABC):
        self.vlay.setSpacing(0)
 
        self.area = QScrollArea()
+       self.area.setObjectName("area")
        self.area.setWidgetResizable(True)
        self.area_body = QWidget()
        self.area.setWidget(self.area_body)
@@ -55,7 +63,6 @@ class SorollWidget(QGroupBox,RQWidgetABC):
        self.glay = QGridLayout(self.area_body)
        self.glay.setContentsMargins(0,0,0,0)
        self.glay.setSpacing(6)
-
 
     # 位置
     def getNextPos(self)->tuple:
@@ -84,6 +91,7 @@ class SorollWidget(QGroupBox,RQWidgetABC):
         pos = self.getNextPos()
         print(pos,xpath)
         self.glay.addWidget(xpath_box,*pos)
+
 
     def menu_Event(self,pos:QPoint):
         # 创建菜单
