@@ -145,6 +145,7 @@ border-left:1px solid gray;
         self.op_hlay.setSpacing(0)
         self.op_left = QWidget()
         self.op_right= QWidget()
+        self.op_right.setMinimumWidth(600)
         self.op_left.setObjectName("op_left")
         self.op_right.setObjectName("op_right")
         self.op_hlay.addWidget(self.op_left)
@@ -156,11 +157,8 @@ border-left:1px solid gray;
         self.opleft_vlay.setSpacing(0)
         self.opl_up = QWidget()
         self.opl_up.setObjectName("opl_up")
-        self.opl_up.setMaximumHeight(50)
+        self.opl_up.setFixedHeight(50)
         self.opleft_vlay.addWidget(self.opl_up)
-        self.opl_down = QWidget()
-        self.opl_down.setObjectName("opl_down")
-        self.opleft_vlay.addWidget(self.opl_down)
 
         # url
         self.url_line = QLineEdit(self.opl_up)
@@ -188,9 +186,10 @@ border-left:1px solid gray;
         self.eye_btn.setGeometry(600,10,50,30)
 
         # 标签操作区域
-        self.box = SorollWidget(self.opl_down)
+        self.box = SorollWidget()
         self.box.setTitle("标签区")
         self.box.setObjectName("box")
+        self.opleft_vlay.addWidget(self.box)
 
 
 
