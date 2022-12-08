@@ -21,15 +21,13 @@ class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
 
-        # 窗口默认最大化
-
         self.browser = Browser()
         self.setWindowTitle("ACode")
         self.setupUi()
 
     def setupUi(self):
         self.setObjectName("st_win")
-        self.resize(1235, 844)
+        # self.resize(1235, 844)
         self.setStyleSheet('''
 *{
 background-color: rgb(33, 33, 33);

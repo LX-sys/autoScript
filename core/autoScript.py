@@ -33,6 +33,9 @@ class AutoScript(AutoScriptUI):
         self.Init()
 
     def Init(self):
+        # 窗口默认最大化
+        self.showMaximized()
+
         # 默认所有标签都勾选
         for xpath, check in self.render.render_dict.items():
             self.box.addXpathCheckBox(xpath, check, self.render_state)
