@@ -15,6 +15,7 @@ from commonHead import (
     QGridLayout,
     QPushButton,
     QWidget,
+    QFrame,
     QMenu,
     QCheckBox,
     pyqtSignal,
@@ -23,6 +24,7 @@ from commonHead import (
     QCursor
 )
 
+from LibGui.customize.fflayout import FFLayout
 from LibGui.r_controls import RQWidgetABC
 # from LibGui.r_controls import GroupBox
 
@@ -44,6 +46,12 @@ class SorollWidget(QGroupBox,RQWidgetABC):
 #area{
 border:none;
 }
+/*#area_body{
+background-color:red;
+}*/
+QPushButton{
+background-color:red;
+}
        ''')
 
        self.row_max = 5  # 一行最多 5个
@@ -57,21 +65,13 @@ border:none;
        self.area.setObjectName("area")
        self.area.setWidgetResizable(True)
        self.area_body = QWidget()
+       self.area_body.setObjectName("area_body")
        self.area.setWidget(self.area_body)
        self.vlay.addWidget(self.area)
 
-       self.glay = QGridLayout(self.area_body)
+       self.glay = FFLayout(self.area_body)
        self.glay.setContentsMargins(0,0,0,0)
-       self.glay.setSpacing(6)
-
-    # 位置
-    def getNextPos(self)->tuple:
-        if self.col < self.row_max-1:
-            self.col += 1
-        else:
-            self.row+=1
-            self.col = 0
-        return self.row, self.col
+       self.glay.setSpacing(3)
 
     # 添加xpath 到操作区域
     def addXpathCheckBox(self,xpath:str,isChecked=False,call=None):
@@ -88,10 +88,8 @@ border:none;
         if isChecked:
             xpath_box.setCheckState(Qt.Checked)
         xpath_box.stateChanged.connect(partial(call, xpath_box))
-        pos = self.getNextPos()
-        print(pos,xpath)
-        self.glay.addWidget(xpath_box,*pos)
 
+        self.glay.addWidget(xpath_box)
 
     def menu_Event(self,pos:QPoint):
         # 创建菜单
@@ -105,50 +103,21 @@ border:none;
         # 显示菜单
         menu.exec_(QCursor.pos())
 
-        # 从操作区移除xpath
-
+    # 从操作区移除xpath
     def delXpathCheckBox(self, xpath: str):
         '''
         :param xpath:
         :return:
         '''
         xpath = re.sub("^//", "", xpath)  # 删除的时候,也不需要//
-        del_i = None
-        for i in range(self.glay.count()):
-            # print(i)
-            item = self.glay.itemAt(i)
-            if item is None:
-                continue
 
-            w_check = item.widget()
-
+        for w_check in self.glay.allWidget():
             if isinstance(w_check, QCheckBox) and w_check.text() == xpath:
                 w_check.stateChanged.disconnect()  # 断开信号连接
-                self.glay.removeItem(item)  # 移除item
-                delete(w_check)  # 删除对象
-                del_i = i
-                break
-            # elif flag:
-            #     r,c,_,_ = self.box_glay.getItemPosition(i)
-            #     print(r,c)
-            #     self.box_glay.addWidget(w_check,r,c)
-            # print(w_check,w_check.text(),self.box_glay.getItemPosition(i))
-        for i in range(del_i + 1, self.glay.count()):
-            print("ii", i)
-            item = self.glay.itemAt(i)
-            self.glay.addWidget(item.widget(), 0, 3)
-            # print(i,self.box_glay.getItemPosition(i))
+                self.glay.removeWidget(w_check)  # 移除布局
+                delete(w_check)  # 销毁对象
+                break  # 跳出 ,一定要有这句话
 
-        # if self.col > 0:
-        #     self.col-=1
-        # else:
-        #     self.row-=1
-        #     if self.row < 0:
-        #         self.row = 0
-        #     self.col = self.row_max-1
-
-        for i in range(self.glay.count()):
-            print("->", self.glay.getItemPosition(i), self.glay.itemAt(i).widget().text())
 
 
 if __name__ == '__main__':
