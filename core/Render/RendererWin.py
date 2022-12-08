@@ -208,6 +208,12 @@ border-width:2px;
             browser_w,browser_h = self.desktopSize()
         else:
             browser_w,browser_h = browser_size.width(),browser_size.height()
+
+        if browser_w == 0:
+            browser_w = 1980
+        if browser_h == 0:
+            browser_h = 1024
+
         page_area_w = self.width()
         page_area_h = self.height()
 
