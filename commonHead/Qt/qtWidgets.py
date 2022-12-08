@@ -17,4 +17,5 @@ from PyQt5.QtWidgets import (
     QMenu,
     QTableWidget,
     QScrollArea,
+    QWidgetItem,
 )
