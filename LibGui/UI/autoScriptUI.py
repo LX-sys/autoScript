@@ -13,12 +13,15 @@ from commonHead import (
     QVBoxLayout,
     QSize,
 )
-
-
 from LibGui.loadBrowser import Browser
+
+
+# 主界面UI
 class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
+
+        # 窗口默认最大化
 
         self.browser = Browser()
         self.setWindowTitle("ACode")
@@ -121,39 +124,74 @@ border:none;
         # ---
         self.operation()
 
+    # 代码区域
+    def code_area(self):
+        pass
+
+    # 绘图区域
+    def draw(self):
+        pass
+
     # 操作区域
     def operation(self):
+        self.page_op.setStyleSheet('''
+#op_right{
+border-left:1px solid gray;
+}
+        ''')
+        # 创建水平布局
+        self.op_hlay = QHBoxLayout(self.page_op)
+        self.op_hlay.setContentsMargins(0,0,0,0)
+        self.op_hlay.setSpacing(0)
+        self.op_left = QWidget()
+        self.op_right= QWidget()
+        self.op_left.setObjectName("op_left")
+        self.op_right.setObjectName("op_right")
+        self.op_hlay.addWidget(self.op_left)
+        self.op_hlay.addWidget(self.op_right)
+
+        # 在左边 创建上下布局
+        self.opleft_vlay = QVBoxLayout(self.op_left)
+        self.opleft_vlay.setContentsMargins(0,0,0,0)
+        self.opleft_vlay.setSpacing(0)
+        self.opl_up = QWidget()
+        self.opl_up.setObjectName("opl_up")
+        self.opl_up.setMaximumHeight(50)
+        self.opleft_vlay.addWidget(self.opl_up)
+        self.opl_down = QWidget()
+        self.opl_down.setObjectName("opl_down")
+        self.opleft_vlay.addWidget(self.opl_down)
+
         # url
-        self.url_line = QLineEdit(self.page_op)
+        self.url_line = QLineEdit(self.opl_up)
         self.url_line.setText("https://www.baidu.com/")
         self.url_line.setObjectName("url_line")
         self.url_line.setPlaceholderText("输入Url")
-        self.url_line.setGeometry(10,10,250,30)
-        self.url_submit = QPushButton("访问",self.page_op)
+        self.url_line.setGeometry(2,10,250,30)
+        self.url_submit = QPushButton("访问",self.opl_up)
         self.url_submit.setObjectName("url_submit")
         self.url_submit.setGeometry(265,10,80,30)
 
         # 重新渲染按钮
-        self.render_btn = QPushButton("重新渲染",self.page_op)
+        self.render_btn = QPushButton("重新渲染",self.opl_up)
         self.render_btn.setObjectName("render_btn")
         self.render_btn.setGeometry(375,10,90,30)
 
         # 生成自动化代码
-        self.write_code_btn =QPushButton("生成代码",self.page_op)
+        self.write_code_btn =QPushButton("生成代码",self.opl_up)
         self.write_code_btn.setObjectName("write_code_btn")
         self.write_code_btn.setGeometry(490,10,90,30)
 
         # 眼睛
-        self.eye_btn = Eye("眼睛",self.page_op)
+        self.eye_btn = Eye("眼睛",self.opl_up)
         self.eye_btn.setObjectName("eye_btn")
         self.eye_btn.setGeometry(600,10,50,30)
 
         # 标签操作区域
-        self.box = SorollWidget(self.page_op)
+        self.box = SorollWidget(self.opl_down)
         self.box.setTitle("标签区")
-        self.box.setFixedSize(600,150)
         self.box.setObjectName("box")
-        self.box.move(10,45)
+
 
 
 if __name__ == '__main__':
