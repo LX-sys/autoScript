@@ -18,4 +18,5 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QScrollArea,
     QWidgetItem,
+    QSplitter
 )
