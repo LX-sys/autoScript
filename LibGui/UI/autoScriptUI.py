@@ -12,6 +12,9 @@ from commonHead import (
     QHBoxLayout,
     QVBoxLayout,
     QSize,
+    QSplitter,
+    Qt,
+    QResizeEvent
 )
 from LibGui.loadBrowser import Browser
 
@@ -21,9 +24,15 @@ class AutoScriptUI(QStackedWidget):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
 
+        # 初始化 绘制窗口的时候,会调用渲染函数,需要阻止
+        self.init_size_rander = False
+
         self.browser = Browser()
         self.setWindowTitle("ACode")
         self.setupUi()
+
+        # 窗口默认最大化
+        self.showMaximized()
 
     def setupUi(self):
         self.setObjectName("st_win")
@@ -91,8 +100,6 @@ border:none;
         self.render = RendererWin()
         self.area_draw.addWidget(self.render)
         self.area_draw.addWidget(self.browser)
-        # self.browser.get("https://www.baidu.com/")
-        # self.browser.show()
         self.verticalLayout.addWidget(self.area_draw)
         # -========================-
 
@@ -135,15 +142,20 @@ border:none;
         self.page_op.setStyleSheet('''
 #op_right{
 border-left:1px solid gray;
+background-color:blue;
 }
         ''')
         # 创建水平布局
-        self.op_hlay = QHBoxLayout(self.page_op)
-        self.op_hlay.setContentsMargins(0,0,0,0)
-        self.op_hlay.setSpacing(0)
+        self.op_hlay = QSplitter(self.page_op)
+        self.op_hlay.setOrientation(Qt.Horizontal)
+        self.op_hlay.resize(self.page_op.size())
+        # self.op_hlay.setOpaqueResize(True)
+        # self.op_hlay = QHBoxLayout(self.page_op)
+        # self.op_hlay.setContentsMargins(0,0,0,0)
+        # self.op_hlay.setSpacing(0)
         self.op_left = QWidget()
         self.op_right= QWidget()
-        self.op_right.setMinimumWidth(600)
+        # self.op_right.setMinimumWidth(400)
         self.op_left.setObjectName("op_left")
         self.op_right.setObjectName("op_right")
         self.op_hlay.addWidget(self.op_left)
@@ -189,7 +201,9 @@ border-left:1px solid gray;
         self.box.setObjectName("box")
         self.opleft_vlay.addWidget(self.box)
 
-
+    def resizeEvent(self, e:QResizeEvent) -> None:
+        self.op_hlay.resize(e.size())  # 自动调节自动布局大小
+        super(AutoScriptUI, self).resizeEvent(e)
 
 if __name__ == '__main__':
 
