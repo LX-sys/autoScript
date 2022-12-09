@@ -73,6 +73,11 @@ background-color:red;
        self.glay.setContentsMargins(0,0,0,0)
        self.glay.setSpacing(3)
 
+       self.addXpathCheckBox("dasd",call=self.tet)
+
+    def tet(self,x):
+        print(x)
+
     # 添加xpath 到操作区域
     def addXpathCheckBox(self,xpath:str,isChecked=False,call=None):
         '''
