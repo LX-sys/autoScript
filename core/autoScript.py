@@ -20,9 +20,6 @@ class AutoScript(AutoScriptUI):
     def __init__(self, *args,**kwargs) -> None:
         super().__init__(*args,**kwargs)
 
-        # 初始化 绘制窗口的时候,会调用渲染函数,需要阻止
-        self.init_size_rander = False
-
         # 眼睛标记
         self.EyeFlag = True
 
@@ -33,9 +30,6 @@ class AutoScript(AutoScriptUI):
         self.Init()
 
     def Init(self):
-        # 窗口默认最大化
-        self.showMaximized()
-
         # 默认所有标签都勾选
         for xpath, check in self.render.render_dict.items():
             self.box.addXpathCheckBox(xpath, check, self.render_state)
@@ -121,6 +115,7 @@ class AutoScript(AutoScriptUI):
         self.eye_btn.springback.connect(self.eye_event)
 
     def resizeEvent(self, e: QResizeEvent) -> None:
+        # self.op_hlay.resize(e.size())  # 自动调节自动布局大小
         if self.init_size_rander:
             self.render.render_view(self.browser)
         super(AutoScript, self).resizeEvent(e)
@@ -133,4 +128,3 @@ if __name__ == '__main__':
     win.show()
 
     sys.exit(app.exec_())
-    
